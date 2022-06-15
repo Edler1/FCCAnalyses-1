@@ -18,9 +18,10 @@ var searchData=
   ['seltaucand_15',['selTauCand',['../namespace_f_c_c_analyses_1_1my_final_sel.html#ac1884beebde05918cbe21a6a68c2e236',1,'FCCAnalyses::myFinalSel']]],
   ['seltaucandtm_16',['selTauCandTM',['../namespace_f_c_c_analyses_1_1my_final_sel.html#aa121aadbac54f34f65434f6228dc0c4b',1,'FCCAnalyses::myFinalSel']]],
   ['seltracks_17',['selTracks',['../struct_f_c_c_analyses_1_1_vertexing_utils_1_1sel_tracks.html',1,'FCCAnalyses::VertexingUtils::selTracks'],['../struct_f_c_c_analyses_1_1_vertexing_utils_1_1sel_tracks.html#ab60698d4d992cf63012c6bbfb56a9da0',1,'FCCAnalyses::VertexingUtils::selTracks::selTracks()']]],
-  ['set_5fpseudojets_18',['set_pseudoJets',['../namespace_f_c_c_analyses_1_1_jet_clustering_utils.html#ae9e847f3943c1e33bd8f6e51cafa3621',1,'FCCAnalyses::JetClusteringUtils']]],
-  ['set_5fpseudojets_5fxyzm_19',['set_pseudoJets_xyzm',['../namespace_f_c_c_analyses_1_1_jet_clustering_utils.html#a2968c138f4aa7e9cf9c22d45bfdda475',1,'FCCAnalyses::JetClusteringUtils']]],
-  ['smearing_2ecc_20',['Smearing.cc',['../_smearing_8cc.html',1,'']]],
-  ['smearing_2eh_21',['Smearing.h',['../_smearing_8h.html',1,'']]],
-  ['sphericityfit_22',['sphericityFit',['../struct_f_c_c_analyses_1_1_algorithms_1_1sphericity_fit.html',1,'FCCAnalyses::Algorithms::sphericityFit'],['../struct_f_c_c_analyses_1_1_algorithms_1_1sphericity_fit.html#a024b324a41bea3f3c760fceb01f6f419',1,'FCCAnalyses::Algorithms::sphericityFit::sphericityFit()']]]
+  ['set_5fflavour_18',['set_flavour',['../namespace_f_c_c_analyses_1_1_jet_tagging_utils.html#a72b42cdba2fa72e1e50394c8808ff3e2',1,'FCCAnalyses::JetTaggingUtils']]],
+  ['set_5fpseudojets_19',['set_pseudoJets',['../namespace_f_c_c_analyses_1_1_jet_clustering_utils.html#ae9e847f3943c1e33bd8f6e51cafa3621',1,'FCCAnalyses::JetClusteringUtils']]],
+  ['set_5fpseudojets_5fxyzm_20',['set_pseudoJets_xyzm',['../namespace_f_c_c_analyses_1_1_jet_clustering_utils.html#a2968c138f4aa7e9cf9c22d45bfdda475',1,'FCCAnalyses::JetClusteringUtils']]],
+  ['smearing_2ecc_21',['Smearing.cc',['../_smearing_8cc.html',1,'']]],
+  ['smearing_2eh_22',['Smearing.h',['../_smearing_8h.html',1,'']]],
+  ['sphericityfit_23',['sphericityFit',['../struct_f_c_c_analyses_1_1_algorithms_1_1sphericity_fit.html',1,'FCCAnalyses::Algorithms::sphericityFit'],['../struct_f_c_c_analyses_1_1_algorithms_1_1sphericity_fit.html#a024b324a41bea3f3c760fceb01f6f419',1,'FCCAnalyses::Algorithms::sphericityFit::sphericityFit()']]]
 ];
