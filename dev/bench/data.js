@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1655313664106,
+  "lastUpdate": 1655313665512,
   "repoUrl": "https://github.com/Edler1/FCCAnalyses-1",
   "entries": {
     "Benchmark": [
@@ -240,6 +240,38 @@ window.BENCHMARK_DATA = {
             "unit": "Seconds",
             "range": 10,
             "extra": "Analysis path: examples/FCCee/flavour/Bc2TauNu"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "eploerer@lxplus711.cern.ch",
+            "name": "Eduardo Ploerer"
+          },
+          "committer": {
+            "email": "eploerer@lxplus711.cern.ch",
+            "name": "Eduardo Ploerer"
+          },
+          "distinct": true,
+          "id": "fa09d00657a6a7353f20549dcb16914f21de626d",
+          "message": "Alternate GM compatible w/ FCCAnalyses",
+          "timestamp": "2022-06-15T19:09:42+02:00",
+          "tree_id": "d29f05b7b7902da01ee1ed85228bf0fd24587ed3",
+          "url": "https://github.com/Edler1/FCCAnalyses-1/commit/fa09d00657a6a7353f20549dcb16914f21de626d"
+        },
+        "date": 1655313665141,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "nightly | Events processed per second: examples/FCCee/higgs/mH-recoil/mumu",
+            "value": 8.413968205007986,
+            "unit": "Evt/s"
+          },
+          {
+            "name": "nightly | Events processed per second: examples/FCCee/flavour/Bc2TauNu",
+            "value": 6.5421575619816705,
+            "unit": "Evt/s"
           }
         ]
       }
