@@ -87,6 +87,18 @@ ROOT::VecOps::RVec<float> get_pz(const ROOT::VecOps::RVec<fastjet::PseudoJet> &i
   return result;
 }
 
+ROOT::VecOps::RVec<float> get_p(const ROOT::VecOps::RVec<fastjet::PseudoJet> &in){
+  ROOT::VecOps::RVec<float> result;
+  for (auto & part: in) {
+    double px = part.px();
+    double py = part.py();
+    double pz = part.pz();
+    double p = sqrt(px*px + py*py + pz*pz);
+    result.push_back(p);
+  }
+  return result;
+}
+
 ROOT::VecOps::RVec<float> get_e(const ROOT::VecOps::RVec<fastjet::PseudoJet> &in){
   ROOT::VecOps::RVec<float> result;
   for (auto & p: in) {
@@ -135,9 +147,135 @@ ROOT::VecOps::RVec<float> get_theta(const ROOT::VecOps::RVec<fastjet::PseudoJet>
   return result;
 }
 
+std::vector<std::vector<int>> int_2d(){
+  std::vector<std::vector<int>> result;
+  for (int i=0; i<5; ++i){
+    std::vector<int> result_tmp;
+    for (int j=0; j<10; ++j){
+      result_tmp.push_back(j);
+    }
+    result.push_back(result_tmp);
+  }
+  return result;
+}
+
+std::vector<std::vector<float>> float_2d(std::vector<std::vector<int>> constituents){
+  std::vector<std::vector<float>> result;
+  std::cout<<"-------EVENT---------"<<std::endl;
+  for (int i=0; i<constituents.size(); ++i){
+    std::cout<<"inner loop..."<<std::endl;
+    std::vector<float> result_tmp;
+    for (int j=0; j<constituents.at(i).size(); ++j){
+      std::cout<<float(j)<<std::endl;
+      result_tmp.push_back(float(j));
+    }
+    result.push_back(result_tmp);
+  }
+  return result;
+}
 
 
-FCCAnalysesJet initialise_FCCAnalysesJet(){
+std::vector<std::vector<float>> reshape2jet(ROOT::VecOps::RVec<float> var, std::vector<std::vector<int>> constituents){
+  //for (auto& stuff : var) std::cout<<stuff<<std::endl;
+  std::vector<std::vector<float>> result;
+  for (auto& ind : constituents){
+    //ROOT::VecOps::RVec<float> tmp_res(ind.size(), 0);
+    std::vector<float> tmp_res;
+    for (auto& i : ind){
+      tmp_res.push_back(var.at(i));
+    }
+    result.push_back(tmp_res);
+  }
+  return result;
+}
+  
+ROOT::VecOps::RVec<float> get_nConstituents(std::vector<std::vector<int>> constituents){
+  ROOT::VecOps::RVec<float> result;
+  for (auto& constis : constituents){
+    result.push_back(constis.size());
+  }
+    return result;
+}
+
+std::vector<std::vector<float>> get_dTheta(ROOT::VecOps::RVec<float> jet_theta, std::vector<std::vector<float>> constituents_theta){
+  std::vector<std::vector<float>> result;
+  //for (auto& ind : indices){
+  for (int j=0; j<jet_theta.size(); j++){
+    std::vector<float> tmp_res;
+    for (auto& consti_theta : constituents_theta[j]){
+      tmp_res.push_back(jet_theta[j]-consti_theta);
+      }
+    result.push_back(tmp_res);
+  }
+  return result;
+}
+
+std::vector<std::vector<float>> get_dPhi(ROOT::VecOps::RVec<float> jet_phi, std::vector<std::vector<float>> constituents_phi){
+  //const float  PI = 3.14159265358979f;
+  float dphi; 
+  std::vector<std::vector<float>> result;
+  for (int j=0; j<jet_phi.size(); j++){
+    std::vector<float> tmp_res;
+    for (auto& consti_phi : constituents_phi[j]){
+      dphi = jet_phi[j]-consti_phi;
+      if(std::abs(dphi)<=(fastjet::pi)){
+	tmp_res.push_back(dphi);
+      }
+      else if(dphi>fastjet::pi){
+	tmp_res.push_back(dphi-2*fastjet::pi);
+      }
+      else if(dphi<-fastjet::pi){
+	tmp_res.push_back(dphi+2*fastjet::pi);
+      }
+    }
+    result.push_back(tmp_res);
+  }
+  return result;
+}
+
+std::vector<std::vector<float>> get_pRel(ROOT::VecOps::RVec<float> jet_p, std::vector<std::vector<float>> constituents_p){
+  std::vector<std::vector<float>> result;
+  //for (auto& ind : indices){
+  for (int j=0; j<jet_p.size(); j++){
+    std::vector<float> tmp_res;
+    for (auto& consti_p : constituents_p[j]){
+      tmp_res.push_back(consti_p/jet_p[j]);
+    }
+    result.push_back(tmp_res);
+  }
+  return result;
+}
+
+
+//int get_nJets(std::vector<std::vector<int>> constituents){
+//  int result = constituents.size();
+//  return result;
+//}
+
+
+//FCCAnalysesJet initialise_FCCAnalysesJet(){
+//
+//  FCCAnalysesJet result;
+//  ROOT::VecOps::RVec<fastjet::PseudoJet> jets;
+//  std::vector<std::vector<int>> constituents;
+//
+//  result.jets = jets;
+//  result.constituents = constituents;
+//
+//  std::vector<float> exclusive_dmerge;
+//  std::vector<float> exclusive_dmerge_max;
+//  exclusive_dmerge.reserve(Nmax_dmerge);
+//  exclusive_dmerge_max.reserve(Nmax_dmerge);
+//
+//  result.exclusive_dmerge = exclusive_dmerge;
+//  result.exclusive_dmerge_max = exclusive_dmerge_max;
+//
+//  return result;
+//};
+
+
+
+FCCAnalysesJet initialise_FCCAnalysesJet(TString clustering_algo, ROOT::VecOps::RVec<float> clustering_params){
 
   FCCAnalysesJet result;
   ROOT::VecOps::RVec<fastjet::PseudoJet> jets;
@@ -145,6 +283,8 @@ FCCAnalysesJet initialise_FCCAnalysesJet(){
 
   result.jets = jets;
   result.constituents = constituents;
+  result.clustering_algo = clustering_algo;
+  result.clustering_params = clustering_params;
 
   std::vector<float> exclusive_dmerge;
   std::vector<float> exclusive_dmerge_max;
@@ -157,11 +297,34 @@ FCCAnalysesJet initialise_FCCAnalysesJet(){
   return result;
 };
 
+//FCCAnalysesJet build_FCCAnalysesJet(const std::vector<fastjet::PseudoJet> &in,
+//                                                        const std::vector<float> &dmerge,
+//                                                        const std::vector<float> &dmerge_max){
+//
+//  FCCAnalysesJet result = initialise_FCCAnalysesJet();
+//  for (const auto& pjet : in) {
+//    result.jets.push_back(pjet);
+//
+//    std::vector<fastjet::PseudoJet> consts = pjet.constituents();
+//    std::vector<int> tmpvec;
+//    for (const auto& constituent : consts){
+//      tmpvec.push_back(constituent.user_index());
+//    }
+//    result.constituents.push_back(tmpvec);
+//  }
+//  result.exclusive_dmerge = dmerge;
+//  result.exclusive_dmerge_max = dmerge_max;
+//  return result;
+//}
+
+
 FCCAnalysesJet build_FCCAnalysesJet(const std::vector<fastjet::PseudoJet> &in,
                                                         const std::vector<float> &dmerge,
-                                                        const std::vector<float> &dmerge_max){
+                                                        const std::vector<float> &dmerge_max,
+                                                        TString clustering_algo,
+                                                        ROOT::VecOps::RVec<float> clustering_params){
 
-  FCCAnalysesJet result = initialise_FCCAnalysesJet();
+  FCCAnalysesJet result = initialise_FCCAnalysesJet(clustering_algo, clustering_params);
   for (const auto& pjet : in) {
     result.jets.push_back(pjet);
 
@@ -176,6 +339,7 @@ FCCAnalysesJet build_FCCAnalysesJet(const std::vector<fastjet::PseudoJet> &in,
   result.exclusive_dmerge_max = dmerge_max;
   return result;
 }
+
 
 
 

@@ -33,7 +33,7 @@ namespace VertexFitterSimple{
   /// Vertex (code from Franco Bedeschi): passing the recoparticles. Units for the beamspot constraint: mum
   VertexingUtils::FCCAnalysesVertex  VertexFitter( int Primary,
 						   ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> recoparticles,
-						   ROOT::VecOps::RVec<edm4hep::TrackState> alltracks,
+						   ROOT::VecOps::RVec<edm4hep::TrackState> thetracks,
 						   bool BeamSpotConstraint = false,
 						   double sigmax=0., double sigmay=0., double sigmaz=0.,
                                                    double bsc_x=0., double bsc_y=0., double bsc_z=0. )  ;
@@ -45,23 +45,22 @@ namespace VertexFitterSimple{
 						      double sigmax=0., double sigmay=0., double sigmaz=0.,
                                                       double bsc_x=0., double bsc_y=0., double bsc_z=0. )  ;
 
-/// Return the tracks that are flagged as coming from the primary vertex
+  /// Return the tracks that are flagged as coming from the primary vertex
   ROOT::VecOps::RVec<edm4hep::TrackState> get_PrimaryTracks( VertexingUtils::FCCAnalysesVertex  initialVertex,
-                                                                        ROOT::VecOps::RVec<edm4hep::TrackState> tracks,
-                                                                        bool BeamSpotConstraint,
-                                                                        double bsc_sigmax, double bsc_sigmay, double bsc_sigmaz,
-                                                                        double bsc_x, double bsc_y, double bsc_z,
-                                                                        int ipass = 0 ) ;
+							     ROOT::VecOps::RVec<edm4hep::TrackState> tracks,
+							     bool BeamSpotConstraint,
+							     double bsc_sigmax, double bsc_sigmay, double bsc_sigmaz,
+							     double bsc_x, double bsc_y, double bsc_z,
+							     int ipass = 0 ) ;
 
 
-/// Return the tracks that are NOT flagged as coming from the primary vertex
+  /// Return the tracks that are NOT flagged as coming from the primary vertex
   ROOT::VecOps::RVec<edm4hep::TrackState>  get_NonPrimaryTracks( ROOT::VecOps::RVec<edm4hep::TrackState> allTracks,
                                                                  ROOT::VecOps::RVec<edm4hep::TrackState> primaryTracks ) ;
 
-/// for an input vector of tracks, return a  vector of bools that tell if the track  was identified as a primary track
+  /// for an input vector of tracks, return a  vector of bools that tell if the track  was identified as a primary track
    ROOT::VecOps::RVec<bool> IsPrimary_forTracks( ROOT::VecOps::RVec<edm4hep::TrackState> allTracks,
-                                                                 ROOT::VecOps::RVec<edm4hep::TrackState> primaryTracks ) ;
-
+						 ROOT::VecOps::RVec<edm4hep::TrackState> primaryTracks ) ;
 
 
   Double_t FastRv(TVectorD p1, TVectorD p2) ;

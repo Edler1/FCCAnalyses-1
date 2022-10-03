@@ -6,6 +6,8 @@
 #include "TFile.h"
 #include "TString.h"
 
+bool debug = false;
+
 namespace FCCAnalyses{
 
 namespace VertexFitterSimple{
@@ -325,13 +327,16 @@ VertexingUtils::FCCAnalysesVertex  VertexFitter( int Primary,
 
 
 VertexingUtils::FCCAnalysesVertex  VertexFitter_Tk( int Primary,
-									ROOT::VecOps::RVec<edm4hep::TrackState> tracks,
-                                                                        bool BeamSpotConstraint,
-                                                                        double bsc_sigmax, double bsc_sigmay, double bsc_sigmaz,
-									double bsc_x, double bsc_y, double bsc_z )  {
+						    ROOT::VecOps::RVec<edm4hep::TrackState> tracks,
+						    bool BeamSpotConstraint,
+						    double bsc_sigmax, double bsc_sigmay, double bsc_sigmaz,
+						    double bsc_x, double bsc_y, double bsc_z )  {
 
   // Units for the beam-spot : mum
   // See https://github.com/HEP-FCC/FCCeePhysicsPerformance/tree/master/General#generating-events-under-realistic-fcc-ee-environment-conditions
+
+  if(debug) std::cout << "Starting VertexFitter_Tk!" << std::endl;
+
 
   // final results :
   VertexingUtils::FCCAnalysesVertex TheVertex;
@@ -726,11 +731,11 @@ VertexingUtils::FCCAnalysesVertex  VertexFitter_Tk( int Primary,
 
 
 ROOT::VecOps::RVec<edm4hep::TrackState>   get_PrimaryTracks( VertexingUtils::FCCAnalysesVertex  initialVertex,
-                                                                        ROOT::VecOps::RVec<edm4hep::TrackState> tracks,
-                                                                        bool BeamSpotConstraint,
-                                                                        double bsc_sigmax, double bsc_sigmay, double bsc_sigmaz,
-                                                                        double bsc_x, double bsc_y, double bsc_z,
-                                                                        int ipass  )  {
+							     ROOT::VecOps::RVec<edm4hep::TrackState> tracks,
+							     bool BeamSpotConstraint,
+							     double bsc_sigmax, double bsc_sigmay, double bsc_sigmaz,
+							     double bsc_x, double bsc_y, double bsc_z,
+							     int ipass  )  {
 
 
 // iterative procedure to determine the primary vertex - and the primary tracks
@@ -738,8 +743,8 @@ ROOT::VecOps::RVec<edm4hep::TrackState>   get_PrimaryTracks( VertexingUtils::FCC
 
 // tracks = the collection of tracks that was used in the first step
 
-//bool debug  = true ;
-  bool debug = false;
+
+if(debug) std::cout << "Starting get_PrimaryTracks!" << std::endl;
 float CHI2MAX = 25  ;
 
 if (debug) {
@@ -763,26 +768,24 @@ if ( chi2max < CHI2MAX ) {
         if (debug) {
             std::cout << " --- DONE, all tracks have chi2 < CHI2MAX " << std::endl;
             std::cout  << "     number of primary tracks selected = " << seltracks.size() << std::endl;
-
         }
         return seltracks ;
 }
 
-        if (debug) {
-                std::cout << " remove a track that has chi2 = " << chi2max << std::endl;
-        }
+if (debug) std::cout << " remove a track that has chi2 = " << chi2max << std::endl;
 
 seltracks.erase( seltracks.begin() + maxElementIndex );
 ipass ++;
 
  VertexingUtils::FCCAnalysesVertex vtx = VertexFitter_Tk(  isPrimaryVertex,
-                                                                                seltracks,
-                                                                         BeamSpotConstraint,
-                                                                         bsc_sigmax, bsc_sigmay, bsc_sigmaz,
-                                                                         bsc_x, bsc_y, bsc_z )  ;
+							   seltracks,
+							   BeamSpotConstraint,
+							   bsc_sigmax, bsc_sigmay, bsc_sigmaz,
+							   bsc_x, bsc_y, bsc_z )  ;
 
+ if(debug) std::cout << "Finished get_PrimaryTracks!" << std::endl;
  return get_PrimaryTracks( vtx, seltracks, BeamSpotConstraint, bsc_sigmax, bsc_sigmay, bsc_sigmaz,
-                                                bsc_x,  bsc_y, bsc_z, ipass ) ;
+			   bsc_x,  bsc_y, bsc_z, ipass ) ;
 
 
 
@@ -790,8 +793,8 @@ ipass ++;
 
 
 ROOT::VecOps::RVec<edm4hep::TrackState>   get_NonPrimaryTracks( ROOT::VecOps::RVec<edm4hep::TrackState> allTracks,
-                                                                                    ROOT::VecOps::RVec<edm4hep::TrackState> primaryTracks ) {
-
+								ROOT::VecOps::RVec<edm4hep::TrackState> primaryTracks ) {
+  if(debug) std::cout << "Starting get_NonPrimaryTracks!" << std::endl;
   ROOT::VecOps::RVec<edm4hep::TrackState> result;
   for (auto & track: allTracks) {
      bool isInPrimary = false;
@@ -803,14 +806,15 @@ ROOT::VecOps::RVec<edm4hep::TrackState>   get_NonPrimaryTracks( ROOT::VecOps::RV
      }
      if ( !isInPrimary) result.push_back( track );
   }
-
+ if(debug) std::cout << "Finished get_NonPrimaryTracks!" << std::endl;
  return result;
 }
 
 
 ROOT::VecOps::RVec<bool> IsPrimary_forTracks( ROOT::VecOps::RVec<edm4hep::TrackState> allTracks,
-                                                                  ROOT::VecOps::RVec<edm4hep::TrackState> primaryTracks ) {
+					      ROOT::VecOps::RVec<edm4hep::TrackState> primaryTracks ) {
 
+  if(debug) std::cout << "Starting IsPrimary_forTracks!" << std::endl;
   ROOT::VecOps::RVec<bool> result;
   for (auto & track: allTracks) {
      bool isInPrimary = false;
@@ -822,6 +826,7 @@ ROOT::VecOps::RVec<bool> IsPrimary_forTracks( ROOT::VecOps::RVec<edm4hep::TrackS
      }
      result.push_back( isInPrimary );
   }
+ if(debug) std::cout << "Finished IsPrimary_forTracks!" << std::endl;
  return result;
 }
 

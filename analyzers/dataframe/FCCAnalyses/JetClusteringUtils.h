@@ -23,12 +23,29 @@ namespace JetClusteringUtils{
 
   const int Nmax_dmerge = 10;  // maximum number of d_{n, n+1} that are kept in FCCAnalysesJet
 
+
+  struct flav_details{
+    ROOT::VecOps::RVec<int> parton_flavour;
+    ROOT::VecOps::RVec<int> hadron_flavour;
+    ROOT::VecOps::RVec<fastjet::PseudoJet> ghost_pseudojets;
+    std::vector<std::vector<int>> ghost_jetconstituents;
+    ROOT::VecOps::RVec<int> ghostStatus;
+    ROOT::VecOps::RVec<int> MCindex;
+  };
+
+
+
   /** Structure to keep useful informations for the jets*/
   struct FCCAnalysesJet{
+    TString clustering_algo;
+    ROOT::VecOps::RVec<float> clustering_params;
     ROOT::VecOps::RVec<fastjet::PseudoJet> jets;
     std::vector<std::vector<int>> constituents;
     std::vector<float> exclusive_dmerge;   // vector of Nmax_dmerge  values associated with merging from n + 1 to n jets, for n =1, 2, ... 10
     std::vector<float> exclusive_dmerge_max ;
+    ROOT::VecOps::RVec<int> flavour;
+    //flav_details *flavour_details;
+    flav_details flavour_details;
   };
 
   /** Set fastjet pseudoJet for later reconstruction*/
@@ -93,12 +110,46 @@ namespace JetClusteringUtils{
   ROOT::VecOps::RVec<float> get_theta(const ROOT::VecOps::RVec<fastjet::PseudoJet> &in);
 
 
+  /// --- From Edi --- ///
+
+  /** Reshape the given variable (given as a flat vector for the event) into 2d vector per jet. */
+  std::vector<std::vector<float>> reshape2jet(ROOT::VecOps::RVec<float> var, std::vector<std::vector<int>> constituents);
+  std::vector<std::vector<int>> int_2d();
+  std::vector<std::vector<float>> float_2d(std::vector<std::vector<int>> constituents);
+
+  /** Get number of constituents per jet. */
+  ROOT::VecOps::RVec<float> get_nConstituents(std::vector<std::vector<int>> in);
+
+  //The below fncs take already the reshaped values as arguments... Different from above...  
+  /** Get difference of jet theta and jet constituent theta. */
+  std::vector<std::vector<float>> get_dTheta(ROOT::VecOps::RVec<float> jet_theta, std::vector<std::vector<float>> constituents_theta);
+
+  /** Get difference of jet phi and jet constituent phi in [-pi, pi]. */
+  std::vector<std::vector<float>> get_dPhi(ROOT::VecOps::RVec<float> jet_phi, std::vector<std::vector<float>> constituents_phi);
+  
+  /** Get ratio of jet constituent |p| and jet |p|. */
+  std::vector<std::vector<float>> get_pRel(ROOT::VecOps::RVec<float> jet_p, std::vector<std::vector<float>> constituents_p);
+
+  //int get_nJets(std::vector<std::vector<int>> constituents);
+
+
+  /// ---          --- ///
+
   ///Internal methods
-  FCCAnalysesJet initialise_FCCAnalysesJet();
+  //FCCAnalysesJet initialise_FCCAnalysesJet();
+  FCCAnalysesJet initialise_FCCAnalysesJet(TString clustering_algo="default_string", ROOT::VecOps::RVec<float> clustering_params={});
+
+  //FCCAnalysesJet build_FCCAnalysesJet(const std::vector<fastjet::PseudoJet> &in,
+  //                                    const std::vector<float> &dmerge,
+  //                                    const std::vector<float> &dmerge_max);
 
   FCCAnalysesJet build_FCCAnalysesJet(const std::vector<fastjet::PseudoJet> &in,
                                       const std::vector<float> &dmerge,
-                                      const std::vector<float> &dmerge_max);
+                                      const std::vector<float> &dmerge_max,
+                                      TString clustering_algo="default_string",
+                                      ROOT::VecOps::RVec<float> clustering_params={});
+
+
 
   std::vector<fastjet::PseudoJet> build_jets(fastjet::ClusterSequence & cs,
                                              int exclusive, float cut,

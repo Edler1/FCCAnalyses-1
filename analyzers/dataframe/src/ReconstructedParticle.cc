@@ -394,6 +394,268 @@ int getJet_ntags(ROOT::VecOps::RVec<bool> in) {
   return result;
 }
 
+
+/// ------ ///
+// From Edi //
+
+sel_template::sel_template(float arg_pass){m_pass = arg_pass;}
+
+template<class G>
+ROOT::VecOps::RVec<G> sel_template::operator()(ROOT::VecOps::RVec<float> tags, ROOT::VecOps::RVec<G> in){
+//ROOT::VecOps::RVec<G> sel_template::operator()(ROOT::VecOps::RVec<float> tags, ROOT::VecOps::RVec<G> in){
+//////////ROOT::VecOps::RVec<int> sel_template::operator()(ROOT::VecOps::RVec<float> tags, ROOT::VecOps::RVec<int> in){
+//ROOT::VecOps::RVec<G> sel_template(ROOT::VecOps::RVec<G> in){
+  ROOT::VecOps::RVec<G> result;
+  /////////ROOT::VecOps::RVec<int> result;
+  //ROOT::VecOps::RVec<G> result = in;
+  bool m_pass=true;
+  for (size_t i = 0; i < in.size(); ++i) {
+    if (m_pass) {
+      if (tags.at(i)) result.push_back(in.at(i));
+    }
+    else {
+      if (!tags.at(i)) result.push_back(in.at(i));
+    }
+  }
+  return result;
+}
+
+
+//template ROOT::VecOps::RVec<float> sel_template<float>(ROOT::VecOps::RVec<float>);
+template ROOT::VecOps::RVec<float> sel_template::operator()<float>(ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float>);
+template ROOT::VecOps::RVec<int> sel_template::operator()<int>(ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<int>);
+///template ROOT::VecOps::RVec<double> sel_template<double>(ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<double>);
+////////////////////template ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> sel_template::operator()(ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData>);
+//template ROOT::VecOps::RVec<edm4hep::MCParticleData> sel_template<edm4hep::MCParticleData>(ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<edm4hep::MCParticleData>);
+//template ROOT::VecOps::RVec<edm4hep::TrackState> sel_template<edm4hep::TrackState>(ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<edm4hep::TrackState>);
+//template ROOT::VecOps::RVec<JetClusteringUtils::FCCAnalysesJet> sel_template<JetClusteringUtils::FCCAnalysesJet>(ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<JetClusteringUtils::FCCAnalysesJet>);
+//think about adding additional instantiations as the need arises...
+
+template<class T>
+std::vector<std::vector<T>> sel_template::operator()(std::vector<std::vector<float>> tag_vector, std::vector<std::vector<T>> in){
+//ROOT::VecOps::RVec<G> sel_template::operator()(ROOT::VecOps::RVec<float> tags, ROOT::VecOps::RVec<G> in){
+//////////ROOT::VecOps::RVec<int> sel_template::operator()(ROOT::VecOps::RVec<float> tags, ROOT::VecOps::RVec<int> in){
+//ROOT::VecOps::RVec<G> sel_template(ROOT::VecOps::RVec<G> in){
+  ////////ROOT::VecOps::RVec<G> result;
+  std::vector<std::vector<T>> result;
+  //ROOT::VecOps::RVec<G> result = in;
+  //////bool m_pass=true;
+  for (size_t i = 0; i < in.size(); ++i) {
+    std::vector<T> tmp_res;
+    for (size_t j = 0; j < in[i].size(); ++j) {
+      if (m_pass) {
+        if (tag_vector.at(i).at(j)) tmp_res.push_back(in.at(i).at(j));
+      }
+      else {
+        if (!tag_vector.at(i).at(j)) tmp_res.push_back(in.at(i).at(j));
+      }
+    }
+    result.push_back(tmp_res);
+  }
+  return result;
+}
+
+template std::vector<std::vector<float>> sel_template::operator()<float>(std::vector<std::vector<float>>, std::vector<std::vector<float>>);
+template std::vector<std::vector<int>> sel_template::operator()<int>(std::vector<std::vector<float>>, std::vector<std::vector<int>>);
+
+
+
+
+////NOTE -> below is actually recently commented, it works fine...
+//
+//std::vector<std::vector<int>> sel_pseudoTemplate(std::vector<std::vector<float>> tag_vector, std::vector<std::vector<int>> in){
+////ROOT::VecOps::RVec<G> sel_template::operator()(ROOT::VecOps::RVec<float> tags, ROOT::VecOps::RVec<G> in){
+////////////ROOT::VecOps::RVec<int> sel_template::operator()(ROOT::VecOps::RVec<float> tags, ROOT::VecOps::RVec<int> in){
+////ROOT::VecOps::RVec<G> sel_template(ROOT::VecOps::RVec<G> in){
+//  ////////ROOT::VecOps::RVec<G> result;
+//  std::vector<std::vector<int>> result;
+//  //ROOT::VecOps::RVec<G> result = in;
+//  //////bool m_pass=true;
+//  for (size_t i = 0; i < in.size(); ++i) {
+//    std::vector<int> tmp_res;
+//    for (size_t j = 0; j < in[i].size(); ++j) {
+//      if (m_pass) {
+//        if (tag_vector.at(i).at(j)) tmp_res.push_back(in.at(i).at(j));
+//      }
+//      else {
+//        if (!tag_vector.at(i).at(j)) tmp_res.push_back(in.at(i).at(j));
+//      }
+//    }
+//    result.push_back(tmp_res);
+//  }
+//  return result;
+//}
+//
+//std::vector<std::vector<float>> sel_pseudoTemplate(std::vector<std::vector<float>> tag_vector, std::vector<std::vector<float>> in){
+//  std::vector<std::vector<float>> result;
+//  //ROOT::VecOps::RVec<G> result = in;
+//  //////bool m_pass=true;
+//  for (size_t i = 0; i < in.size(); ++i) {
+//    std::vector<float> tmp_res;
+//    for (size_t j = 0; j < in[i].size(); ++j) {
+//      if (m_pass) {
+//        if (tag_vector.at(i).at(j)) tmp_res.push_back(in.at(i).at(j));
+//      }
+//      else {
+//        if (!tag_vector.at(i).at(j)) tmp_res.push_back(in.at(i).at(j));
+//      }
+//    }
+//    result.push_back(tmp_res);
+//  }
+//  return result;
+//}
+
+
+ROOT::VecOps::RVec<int> index_splitter(ROOT::VecOps::RVec<int> ind){
+//ROOT::VecOps::RVec<int> index_splitter(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in, ROOT::VecOps::RVec<int> ind){
+  ROOT::VecOps::RVec<int> result;
+  int charged_counter=0;
+  int neutral_counter=0;
+  for(size_t i = 0; i < ind.size(); ++i){
+    if(ind[i]==1){
+      result.push_back(charged_counter);
+      charged_counter+=1;
+    }
+    else if(ind[i]==0){
+      result.push_back(neutral_counter); 
+      neutral_counter+=1;
+    }
+  }
+  return result;
+}
+
+std::vector<std::vector<int>> index_converter(std::vector<std::vector<int>> RP_ind, ROOT::VecOps::RVec<int> split_ind){
+  std::vector<std::vector<int>> result;
+  //for(size_t i = 0; i < in.size(); ++i){
+  for(auto& indices : RP_ind){
+    std::vector<int> tmp_res;
+    for(auto& i : indices){
+      tmp_res.push_back(split_ind.at(i));
+    }
+    result.push_back(tmp_res);
+  }
+  return result;
+}
+
+ROOT::VecOps::RVec<float> is_particle(ROOT::VecOps::RVec<int> index, const ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> & in){
+  ROOT::VecOps::RVec<float> result(in.size(), 0);
+  for(auto& i : index){
+    result[i] = 1;
+  }
+  return result;
+}
+
+std::vector<std::vector<float>> one_hot_encode(ROOT::VecOps::RVec<float> flavour){
+  std::vector<std::vector<float>> result;
+  int min = -5; //std::min_element(flavour.begin(),flavour.end());
+  int max = 5; //std::max_element(flavour.begin(),flavour.end());
+  for(int i = min; i<=max; ++i){
+    std::vector<float> zeros(flavour.size(),0);
+    result.push_back(zeros);
+  }
+  for(size_t k = 0; k<flavour.size(); ++k){
+    for(int j = min; j<=max; ++j){
+      if(j==flavour[k]){
+        result.at(j+5).at(k)=1;
+      }
+    }
+  }
+  return result;
+}
+
+ROOT::VecOps::RVec<float> get_PID(const ROOT::VecOps::RVec<int> & recind, 
+				  const ROOT::VecOps::RVec<int> & mcind, 
+				  const ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> & reco,
+				  const ROOT::VecOps::RVec<edm4hep::MCParticleData> & mc){
+  ROOT::VecOps::RVec<float> result;
+  result = ReconstructedParticle2MC::getRP2MC_pdg(recind, mcind, reco, mc);
+  return result;
+}
+
+ROOT::VecOps::RVec<int> is_S(ROOT::VecOps::RVec<float> PID){
+  
+  ROOT::VecOps::RVec<int> result;
+  for(auto & id : PID){
+    //the below conditions checks on strange mesons (and K0L separately), and strange baryons
+    if((id==130)||(std::abs(int((id/100))%10)==3)||(std::abs(int((id/1000))%10)==3)){
+      result.push_back(1);
+    }
+    else result.push_back(0);
+  }
+  return result;
+  
+  
+}
+  
+ROOT::VecOps::RVec<int> is_Kaon(ROOT::VecOps::RVec<float> PID){
+  
+  ROOT::VecOps::RVec<int> result;
+  for(auto & id : PID){
+    //the below conditions checks only on Kaons
+    if((id==130)||(std::abs(id)==321)||(std::abs(id)==311)||(std::abs(id)==310)){
+      result.push_back(1);
+    }
+    else result.push_back(0);
+    }
+  return result;
+  
+  
+}
+  
+
+ROOT::VecOps::RVec<int> is_Kaon_smearedUniform010(ROOT::VecOps::RVec<float> PID){
+  
+  ROOT::VecOps::RVec<int> result;
+  int tmp_res;
+  for(auto & id : PID){
+    //the below conditions checks only on Kaons
+    if((id==130)||(std::abs(id)==321)||(std::abs(id)==311)||(std::abs(id)==310)){
+      tmp_res=1;
+      }
+    else tmp_res=0;
+    if(gRandom->Uniform()<=0.1) tmp_res = (tmp_res+1)%2;
+    result.push_back(tmp_res);
+  } 
+  return result;
+}
+  
+
+ROOT::VecOps::RVec<int> is_Kaon_smearedUniform005(ROOT::VecOps::RVec<float> PID){
+
+  ROOT::VecOps::RVec<int> result;
+  int tmp_res;
+  for(auto & id : PID){
+    //the below conditions checks only on Kaons
+    if((id==130)||(std::abs(id)==321)||(std::abs(id)==311)||(std::abs(id)==310)){
+      tmp_res=1;
+    }
+    else tmp_res=0;
+      if(gRandom->Uniform()<=0.05) tmp_res = (tmp_res+1)%2;
+      result.push_back(tmp_res);
+  } 
+  return result;
+}
+  
+
+ROOT::VecOps::RVec<int> is_Kaon_smearedUniform001(ROOT::VecOps::RVec<float> PID){
+  
+  ROOT::VecOps::RVec<int> result;
+  int tmp_res;
+  for(auto & id : PID){
+      //the below conditions checks only on Kaons
+    if((id==130)||(std::abs(id)==321)||(std::abs(id)==311)||(std::abs(id)==310)){
+      tmp_res=1;
+    }
+    else tmp_res=0;
+    if(gRandom->Uniform()<=0.01) tmp_res = (tmp_res+1)%2;
+    result.push_back(tmp_res);
+  } 
+  return result;
+}
+  
+  
+/// ------ ///
+
 }//end NS ReconstructedParticle
 
 }//end NS FCCAnalyses
