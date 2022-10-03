@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1655313665512,
+  "lastUpdate": 1664809680034,
   "repoUrl": "https://github.com/Edler1/FCCAnalyses-1",
   "entries": {
     "Benchmark": [
@@ -272,6 +272,49 @@ window.BENCHMARK_DATA = {
             "name": "nightly | Events processed per second: examples/FCCee/flavour/Bc2TauNu",
             "value": 6.5421575619816705,
             "unit": "Evt/s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "eploerer@lxplus770.cern.ch",
+            "name": "Eduardo Ploerer"
+          },
+          "committer": {
+            "email": "eploerer@lxplus770.cern.ch",
+            "name": "Eduardo Ploerer"
+          },
+          "distinct": true,
+          "id": "0cc3437569a604ae7238bcb5e6805ee4bf5e8bfa",
+          "message": "necessary files 2 run",
+          "timestamp": "2022-10-03T16:58:52+02:00",
+          "tree_id": "6f1acf8b2d3ce4465c7b990877837d0cde599d4e",
+          "url": "https://github.com/Edler1/FCCAnalyses-1/commit/0cc3437569a604ae7238bcb5e6805ee4bf5e8bfa"
+        },
+        "date": 1664809678920,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "prod | Time spent running the analysis: examples/FCCee/higgs/mH-recoil/mumu",
+            "value": 10.654543161392212,
+            "unit": "Seconds",
+            "range": 10,
+            "extra": "Analysis path: examples/FCCee/higgs/mH-recoil/mumu"
+          },
+          {
+            "name": "prod | Time spent running the analysis: examples/FCCee/flavour/Bc2TauNu",
+            "value": 14.746546506881714,
+            "unit": "Seconds",
+            "range": 10,
+            "extra": "Analysis path: examples/FCCee/flavour/Bc2TauNu"
+          },
+          {
+            "name": "prod | Time spent running the analysis: examples/FCCee/test",
+            "value": 10.43862771987915,
+            "unit": "Seconds",
+            "range": 10,
+            "extra": "Analysis path: examples/FCCee/test"
           }
         ]
       }
