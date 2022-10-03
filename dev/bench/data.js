@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1664809681582,
+  "lastUpdate": 1664809701875,
   "repoUrl": "https://github.com/Edler1/FCCAnalyses-1",
   "entries": {
     "Benchmark": [
@@ -352,6 +352,49 @@ window.BENCHMARK_DATA = {
             "name": "prod | Events processed per second: examples/FCCee/test",
             "value": 9.579803273332725,
             "unit": "Evt/s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "eploerer@lxplus770.cern.ch",
+            "name": "Eduardo Ploerer"
+          },
+          "committer": {
+            "email": "eploerer@lxplus770.cern.ch",
+            "name": "Eduardo Ploerer"
+          },
+          "distinct": true,
+          "id": "0cc3437569a604ae7238bcb5e6805ee4bf5e8bfa",
+          "message": "necessary files 2 run",
+          "timestamp": "2022-10-03T16:58:52+02:00",
+          "tree_id": "6f1acf8b2d3ce4465c7b990877837d0cde599d4e",
+          "url": "https://github.com/Edler1/FCCAnalyses-1/commit/0cc3437569a604ae7238bcb5e6805ee4bf5e8bfa"
+        },
+        "date": 1664809700770,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "nightly | Time spent running the analysis: examples/FCCee/higgs/mH-recoil/mumu",
+            "value": 11.986218214035034,
+            "unit": "Seconds",
+            "range": 10,
+            "extra": "Analysis path: examples/FCCee/higgs/mH-recoil/mumu"
+          },
+          {
+            "name": "nightly | Time spent running the analysis: examples/FCCee/flavour/Bc2TauNu",
+            "value": 17.17263150215149,
+            "unit": "Seconds",
+            "range": 10,
+            "extra": "Analysis path: examples/FCCee/flavour/Bc2TauNu"
+          },
+          {
+            "name": "nightly | Time spent running the analysis: examples/FCCee/test",
+            "value": 12.010465621948242,
+            "unit": "Seconds",
+            "range": 10,
+            "extra": "Analysis path: examples/FCCee/test"
           }
         ]
       }
