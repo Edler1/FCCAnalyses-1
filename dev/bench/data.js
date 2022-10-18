@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1666082333315,
+  "lastUpdate": 1666082336112,
   "repoUrl": "https://github.com/Edler1/FCCAnalyses-1",
   "entries": {
     "Benchmark": [
@@ -561,6 +561,45 @@ window.BENCHMARK_DATA = {
             "unit": "Seconds",
             "range": 10,
             "extra": "Analysis path: examples/FCCee/test"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "kunal2796@gmail.com",
+            "name": "Kunal Gautam",
+            "username": "kunal2796"
+          },
+          "committer": {
+            "email": "kunal2796@gmail.com",
+            "name": "Kunal Gautam",
+            "username": "kunal2796"
+          },
+          "distinct": true,
+          "id": "a0d50cf0ae35e3aec493dda416164d04f260c7e7",
+          "message": "latest SV & V0 code with updated fns in vertexingutils",
+          "timestamp": "2022-10-18T10:23:04+02:00",
+          "tree_id": "907917da10475d4fcbc81593c531de471f2ad70f",
+          "url": "https://github.com/Edler1/FCCAnalyses-1/commit/a0d50cf0ae35e3aec493dda416164d04f260c7e7"
+        },
+        "date": 1666082334854,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "prod | Events processed per second: examples/FCCee/higgs/mH-recoil/mumu",
+            "value": 6.096973371574507,
+            "unit": "Evt/s"
+          },
+          {
+            "name": "prod | Events processed per second: examples/FCCee/flavour/Bc2TauNu",
+            "value": 4.853698501886203,
+            "unit": "Evt/s"
+          },
+          {
+            "name": "prod | Events processed per second: examples/FCCee/test",
+            "value": 6.635222673339312,
+            "unit": "Evt/s"
           }
         ]
       }
