@@ -166,12 +166,20 @@ class RDFanalysis():
             .Define("jets_pt",         "JetClusteringUtils::get_pt(jets_ee_kt)")
             .Define("jets_eta",        "JetClusteringUtils::get_eta(jets_ee_kt)")
             
+
+
+
+
+
+            .Define("jets_flavour",    "JetTaggingUtils::get_flavour(jets_ee_kt, Particle)")
+            .Define("jets_flavour_unmatched",    "JetTaggingUtils::get_flavour(jets_ee_kt, Particle)")
             .Define("jets_ghostFlavour", "JetTaggingUtils::get_flavour(Particle, Particle1, FCCAnalysesJets_ee_kt, pseudo_jets)")
-            .Define("jets_flavour", "ROOT::VecOps::RVec<float> abs_flav; for(auto& flav : jets_ghostFlavour){if(flav==21){abs_flav.push_back(0); continue;};abs_flav.push_back(std::abs(flav));}; return abs_flav")    .Define("Z_flavour", "JetTaggingUtils::get_Z_flavour(jets_ee_kt, Particle)")
+            #.Define("jets_flavour", "ROOT::VecOps::RVec<float> abs_flav; for(auto& flav : jets_ghostFlavour){if(flav==21){abs_flav.push_back(0); continue;};abs_flav.push_back(std::abs(flav));}; return abs_flav")    
+            .Define("Z_flavour", "JetTaggingUtils::get_Z_flavour(jets_ee_kt, Particle)")
             .Redefine("jets_flavour", "ROOT::VecOps::RVec<float> flav; for(int i=0; i<jets_flavour.size(); ++i){if(jets_flavour.at(i)==Z_flavour.at(i)) flav.push_back(jets_flavour.at(i)); else flav.push_back(0);}return flav;")
 
             #.Define("jets_flavour",    "JetTaggingUtils::get_flavour(jets_ee_kt, Particle)")
-            
+
             #.Define("jets_flavour_placeholder","JetTaggingUtils::get_flavour(jets_ee_kt, Particle)")
             .Define("jets_onehot", "ReconstructedParticle::one_hot_encode(jets_flavour)")
             .Define("jets_isBbar", "jets_onehot[0]")
@@ -185,6 +193,72 @@ class RDFanalysis():
             .Define("jets_isC",    "jets_onehot[9]")
             .Define("jets_isB",    "jets_onehot[10]")
             .Define("jets_isUndefined","jets_onehot[5]")
+
+            #Aliasing to match Alexandre's files
+            .Define("isU", "std::vector<int> isU; for(int i=0; i<jets_isU.size(); ++i){isU.push_back(jets_isU[i]+jets_isUbar[i]);}; return isU;")
+            .Define("isD", "std::vector<int> isD; for(int i=0; i<jets_isD.size(); ++i){isD.push_back(jets_isD[i]+jets_isDbar[i]);}; return isD;")
+            .Define("isS", "std::vector<int> isS; for(int i=0; i<jets_isS.size(); ++i){isS.push_back(jets_isS[i]+jets_isSbar[i]);}; return isS;")
+            .Define("isC", "std::vector<int> isC; for(int i=0; i<jets_isC.size(); ++i){isC.push_back(jets_isC[i]+jets_isCbar[i]);}; return isC;")
+            .Define("isB", "std::vector<int> isB; for(int i=0; i<jets_isB.size(); ++i){isB.push_back(jets_isB[i]+jets_isBbar[i]);}; return isB;")
+            .Define("isUndefined", "std::vector<int> isUndefined(jets_isUndefined.begin(), jets_isUndefined.end()); return isUndefined;")
+
+
+            #Ghost Flavour 
+            .Redefine("jets_ghostFlavour", "ROOT::VecOps::RVec<float> flav; for(int i=0; i<jets_ghostFlavour.size(); ++i){if(jets_ghostFlavour.at(i)==Z_flavour.at(i)) flav.push_back(jets_ghostFlavour.at(i)); else flav.push_back(0);}return flav;")
+            #.Define("jets_flavour_placeholder","JetTaggingUtils::get_flavour(jets_ee_kt, Particle)")
+            .Define("jets_onehot_ghost", "ReconstructedParticle::one_hot_encode(jets_ghostFlavour)")
+            .Define("jets_isBbar_ghost", "jets_onehot_ghost[0]")
+            .Define("jets_isCbar_ghost", "jets_onehot_ghost[1]")
+            .Define("jets_isSbar_ghost", "jets_onehot_ghost[2]")
+            .Define("jets_isUbar_ghost", "jets_onehot_ghost[3]")
+            .Define("jets_isDbar_ghost", "jets_onehot_ghost[4]")
+            .Define("jets_isD_ghost",    "jets_onehot_ghost[6]")
+            .Define("jets_isU_ghost",    "jets_onehot_ghost[7]")
+            .Define("jets_isS_ghost",    "jets_onehot_ghost[8]")
+            .Define("jets_isC_ghost",    "jets_onehot_ghost[9]")
+            .Define("jets_isB_ghost",    "jets_onehot_ghost[10]")
+            .Define("jets_isUndefined_ghost","jets_onehot_ghost[5]")
+
+
+            #Aliasing to match Alexandre's files
+            .Define("isU_ghost", "std::vector<int> isU_ghost; for(int i=0; i<jets_isU_ghost.size(); ++i){isU_ghost.push_back(jets_isU_ghost[i]+jets_isUbar_ghost[i]);}; return isU_ghost;")
+            .Define("isD_ghost", "std::vector<int> isD_ghost; for(int i=0; i<jets_isD_ghost.size(); ++i){isD_ghost.push_back(jets_isD_ghost[i]+jets_isDbar_ghost[i]);}; return isD_ghost;")
+            .Define("isS_ghost", "std::vector<int> isS_ghost; for(int i=0; i<jets_isS_ghost.size(); ++i){isS_ghost.push_back(jets_isS_ghost[i]+jets_isSbar_ghost[i]);}; return isS_ghost;")
+            .Define("isC_ghost", "std::vector<int> isC_ghost; for(int i=0; i<jets_isC_ghost.size(); ++i){isC_ghost.push_back(jets_isC_ghost[i]+jets_isCbar_ghost[i]);}; return isC_ghost;")
+            .Define("isB_ghost", "std::vector<int> isB_ghost; for(int i=0; i<jets_isB_ghost.size(); ++i){isB_ghost.push_back(jets_isB_ghost[i]+jets_isBbar_ghost[i]);}; return isB_ghost;")
+            .Define("isUndefined_ghost", "std::vector<int> isUndefined_ghost(jets_isUndefined_ghost.begin(), jets_isUndefined_ghost.end()); return isUndefined_ghost;")
+
+
+
+            #Z_flavour
+            #.Define("jets_flavour_placeholder","JetTaggingUtils::get_flavour(jets_ee_kt, Particle)")
+            .Define("jets_onehot_Z", "ReconstructedParticle::one_hot_encode(Z_flavour)")
+            .Define("jets_isBbar_Z", "jets_onehot_Z[0]")
+            .Define("jets_isCbar_Z", "jets_onehot_Z[1]")
+            .Define("jets_isSbar_Z", "jets_onehot_Z[2]")
+            .Define("jets_isUbar_Z", "jets_onehot_Z[3]")
+            .Define("jets_isDbar_Z", "jets_onehot_Z[4]")
+            .Define("jets_isD_Z",    "jets_onehot_Z[6]")
+            .Define("jets_isU_Z",    "jets_onehot_Z[7]")
+            .Define("jets_isS_Z",    "jets_onehot_Z[8]")
+            .Define("jets_isC_Z",    "jets_onehot_Z[9]")
+            .Define("jets_isB_Z",    "jets_onehot_Z[10]")
+            .Define("jets_isUndefined_Z","jets_onehot_Z[5]")
+
+            #Aliasing to match Alexandre's files
+            .Define("isU_Z", "std::vector<int> isU_Z; for(int i=0; i<jets_isU_Z.size(); ++i){isU_Z.push_back(jets_isU_Z[i]+jets_isUbar_Z[i]);}; return isU_Z;")
+            .Define("isD_Z", "std::vector<int> isD_Z; for(int i=0; i<jets_isD_Z.size(); ++i){isD_Z.push_back(jets_isD_Z[i]+jets_isDbar_Z[i]);}; return isD_Z;")
+            .Define("isS_Z", "std::vector<int> isS_Z; for(int i=0; i<jets_isS_Z.size(); ++i){isS_Z.push_back(jets_isS_Z[i]+jets_isSbar_Z[i]);}; return isS_Z;")
+            .Define("isC_Z", "std::vector<int> isC_Z; for(int i=0; i<jets_isC_Z.size(); ++i){isC_Z.push_back(jets_isC_Z[i]+jets_isCbar_Z[i]);}; return isC_Z;")
+            .Define("isB_Z", "std::vector<int> isB_Z; for(int i=0; i<jets_isB_Z.size(); ++i){isB_Z.push_back(jets_isB_Z[i]+jets_isBbar_Z[i]);}; return isB_Z;")
+            .Define("isUndefined_Z", "std::vector<int> isUndefined_Z(jets_isUndefined_Z.begin(), jets_isUndefined_Z.end()); return isUndefined_Z;")
+
+
+
+
+
+
+
             
             #.Define("jets_isBbar_placeholder", "jets_onehot[0]")
             #.Define("jets_isCbar_placeholder", "jets_onehot[1]")
@@ -261,14 +335,6 @@ class RDFanalysis():
             .Define("RPj_neutral_pRel",     "JetClusteringUtils::get_pRel(jets_p, RPj_neutral_p)")
             .Define("RPj_neutral_isPhoton", "ReconstructedParticle::sel_template(false)(RPj_hasTRK, RPj_isPhoton)")
             
-            #Aliasing to match Alexandre's file
-            .Define("isB", "std::vector<int> isB(jets_isB.begin(), jets_isB.end()); return isB;")
-            .Define("isC", "std::vector<int> isC(jets_isC.begin(), jets_isC.end()); return isC;")
-            .Define("isUD", "std::vector<int> isUD; for(int i=0; i<jets_isU.size(); ++i){isUD.push_back(jets_isU[i]+jets_isD[i]);}; return isUD;")
-            .Define("isS", "std::vector<int> isS(jets_isS.begin(), jets_isS.end()); return isS;")
-            #.Define("isUndefined", "std::vector<int> isUndefined(jets_isB.size(), 0); for(int i=0; i<isUndefined.size(); ++i){isUndefined[i] = (jets_isB[i]==0);}; return isUndefined;")
-            #.Define("isUndefined", "std::vector<int> isUndefined(jets_isC.size(), 0); for(int i=0; i<isUndefined.size(); ++i){isUndefined[i] = (jets_isC[i]==0);}; return isUndefined;")
-            .Define("isUndefined", "std::vector<int> isUndefined(jets_isU.size(), 0); for(int i=0; i<isUndefined.size(); ++i){isUndefined[i] = (jets_isU[i]==0)&&(jets_isD[i]==0)&&(jets_isS[i]==0);}; return isUndefined;")
             #.Define("isB", "int isB = jets_isB_placeholder[0]; return isB;")
             #.Define("isC", "int isC = jets_isC_placeholder[0]; return isC;")
             #.Define("isUD", "int isUD = jets_isU_placeholder[0]+jets_isD_placeholder[0]; return isUD;")
@@ -291,8 +357,6 @@ class RDFanalysis():
             ###.Define("Npfcan_ptrel",             "RPj_neutral_p")
             #### - to here
             ###.Define("Npfcan_isGamma",           "RPj_neutral_isPhoton")
-            .Define("isU",                      "std::vector<int> isU(jets_isU.begin(), jets_isU.end()); return isU;")
-            .Define("isD",                      "std::vector<int> isD(jets_isD.begin(), jets_isD.end()); return isD;")
             #.Define("isU",                      "int isU = jets_isU[0]; return isU;")
             #.Define("isD",                      "int isD = jets_isD[0]; return isD;")
 
@@ -442,6 +506,19 @@ class RDFanalysis():
             "isC",
             "isB",
             "isUndefined",
+            "Z_flavour",
+            "isU_ghost",
+            "isD_ghost",
+            "isS_ghost",
+            "isC_ghost",
+            "isB_ghost",
+            "isUndefined_ghost",
+            "isU_Z",
+            "isD_Z",
+            "isS_Z",
+            "isC_Z",
+            "isB_Z",
+            "isUndefined_Z",
             
             # Jet-level Variables
             "jets_p",
@@ -479,7 +556,7 @@ class RDFanalysis():
             "RPj_neutral_isPhoton",            
 
             #### jet variables
-            ####"n_sv",
+            ####"nSV",
             ####"jet_p",
             ####"jet_pt",
             ####"jet_energy",
@@ -533,6 +610,7 @@ class RDFanalysis():
 
             #SV variables
             ####"sv_mass1",
+            ########"nSV",
             "sv_mass",
             ####"sv_p4",
             "sv_p",
@@ -549,6 +627,7 @@ class RDFanalysis():
             "sv_d3d",
 
             #V0 variables
+            ###"nV0",
             "v0_pid",
             "v0_mass",
             #"v0_p4",
