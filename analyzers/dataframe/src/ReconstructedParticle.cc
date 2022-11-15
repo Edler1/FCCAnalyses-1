@@ -591,8 +591,8 @@ ROOT::VecOps::RVec<int> is_Kaon(ROOT::VecOps::RVec<float> PID){
   
   ROOT::VecOps::RVec<int> result;
   for(auto & id : PID){
-    //the below conditions checks only on Kaons
-    if((id==130)||(std::abs(id)==321)||(std::abs(id)==311)||(std::abs(id)==310)){
+    //the below conditions checks only on charged Kaons
+    if(std::abs(id)==321){
       result.push_back(1);
     }
     else result.push_back(0);
@@ -609,7 +609,7 @@ ROOT::VecOps::RVec<int> is_Kaon_smearedUniform010(ROOT::VecOps::RVec<float> PID)
   int tmp_res;
   for(auto & id : PID){
     //the below conditions checks only on Kaons
-    if((id==130)||(std::abs(id)==321)||(std::abs(id)==311)||(std::abs(id)==310)){
+    if(std::abs(id)==321){
       tmp_res=1;
       }
     else tmp_res=0;
@@ -626,7 +626,7 @@ ROOT::VecOps::RVec<int> is_Kaon_smearedUniform005(ROOT::VecOps::RVec<float> PID)
   int tmp_res;
   for(auto & id : PID){
     //the below conditions checks only on Kaons
-    if((id==130)||(std::abs(id)==321)||(std::abs(id)==311)||(std::abs(id)==310)){
+    if(std::abs(id)==321){
       tmp_res=1;
     }
     else tmp_res=0;
@@ -643,7 +643,7 @@ ROOT::VecOps::RVec<int> is_Kaon_smearedUniform001(ROOT::VecOps::RVec<float> PID)
   int tmp_res;
   for(auto & id : PID){
       //the below conditions checks only on Kaons
-    if((id==130)||(std::abs(id)==321)||(std::abs(id)==311)||(std::abs(id)==310)){
+    if(std::abs(id)==321){
       tmp_res=1;
     }
     else tmp_res=0;
