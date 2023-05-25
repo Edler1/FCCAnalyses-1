@@ -563,6 +563,24 @@ std::vector<std::vector<float>> one_hot_encode(ROOT::VecOps::RVec<float> flavour
   return result;
 }
 
+std::vector<std::vector<float>> one_hot_encode_Higgs(ROOT::VecOps::RVec<float> flavour){
+  std::vector<std::vector<float>> result;
+  int min = -6; //std::min_element(flavour.begin(),flavour.end());
+  int max = 6; //std::max_element(flavour.begin(),flavour.end());
+  for(int i = min; i<=max; ++i){
+    std::vector<float> zeros(flavour.size(),0);
+    result.push_back(zeros);
+  }
+  for(size_t k = 0; k<flavour.size(); ++k){
+    for(int j = min; j<=max; ++j){
+      if(((j==flavour[k])&&(std::abs(j)<=5))||((std::abs(21)==flavour[k])&&(j==6))){
+        result.at(j+6).at(k)=1;
+      }
+    }
+  }
+  return result;
+}
+
 ROOT::VecOps::RVec<float> get_PID(const ROOT::VecOps::RVec<int> & recind, 
 				  const ROOT::VecOps::RVec<int> & mcind, 
 				  const ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> & reco,
@@ -648,6 +666,25 @@ ROOT::VecOps::RVec<int> is_Kaon_smearedUniform001(ROOT::VecOps::RVec<float> PID)
     }
     else tmp_res=0;
     if(gRandom->Uniform()<=0.01) tmp_res = (tmp_res+1)%2;
+    result.push_back(tmp_res);
+  } 
+  return result;
+}
+
+
+ROOT::VecOps::RVec<int> is_Kaon_smearedUniform(ROOT::VecOps::RVec<float> PID, float efficiency, float mistag_pi){
+  
+  ROOT::VecOps::RVec<int> result;
+  int tmp_res;
+  for(auto & id : PID){
+    //the below conditions checks only on Kaons
+    if((std::abs(id)==321) && (gRandom->Uniform()<=efficiency)){
+      tmp_res=1;
+    } else if((std::abs(id)==211) && (gRandom->Uniform()<=mistag_pi)) {
+      tmp_res=1;
+    } else {
+      tmp_res=0;
+    }
     result.push_back(tmp_res);
   } 
   return result;

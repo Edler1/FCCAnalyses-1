@@ -193,24 +193,26 @@ class RDFanalysis():
             .Define("jets_ghostFlavour_angle03status70", "JetTaggingUtils::get_flavour(Particle, Particle1, FCCAnalysesJets_ee_kt, pseudo_jets, 0.3, 70)")            
             .Define("jets_ghostFlavour_angle03status20", "JetTaggingUtils::get_flavour(Particle, Particle1, FCCAnalysesJets_ee_kt, pseudo_jets, 0.3, 20)")            
             #.Define("jets_flavour", "ROOT::VecOps::RVec<float> abs_flav; for(auto& flav : jets_ghostFlavour){if(flav==21){abs_flav.push_back(0); continue;};abs_flav.push_back(std::abs(flav));}; return abs_flav")    
-            .Define("Z_flavour", "JetTaggingUtils::get_Z_flavour(jets_ee_kt, Particle)")
-            .Redefine("jets_flavour", "ROOT::VecOps::RVec<float> flav; for(int i=0; i<jets_flavour.size(); ++i){if(jets_flavour.at(i)==Z_flavour.at(i)) flav.push_back(jets_flavour.at(i)); else flav.push_back(0);}return flav;")
+            .Define("H_flavour", "JetTaggingUtils::get_H_flavour(jets_ee_kt, Particle, Particle1)")
+            .Redefine("jets_flavour", "ROOT::VecOps::RVec<float> flav; for(int i=0; i<jets_flavour.size(); ++i){if(jets_flavour.at(i)==H_flavour.at(i)) flav.push_back(jets_flavour.at(i)); else flav.push_back(0);}return flav;")
 
             #.Define("jets_flavour",    "JetTaggingUtils::get_flavour(jets_ee_kt, Particle)")
 
             #.Define("jets_flavour_placeholder","JetTaggingUtils::get_flavour(jets_ee_kt, Particle)")
-            .Define("jets_onehot", "ReconstructedParticle::one_hot_encode(jets_flavour)")
-            .Define("jets_isBbar", "jets_onehot[0]")
-            .Define("jets_isCbar", "jets_onehot[1]")
-            .Define("jets_isSbar", "jets_onehot[2]")
-            .Define("jets_isUbar", "jets_onehot[3]")
-            .Define("jets_isDbar", "jets_onehot[4]")
-            .Define("jets_isD",    "jets_onehot[6]")
-            .Define("jets_isU",    "jets_onehot[7]")
-            .Define("jets_isS",    "jets_onehot[8]")
-            .Define("jets_isC",    "jets_onehot[9]")
-            .Define("jets_isB",    "jets_onehot[10]")
-            .Define("jets_isUndefined","jets_onehot[5]")
+            .Define("jets_onehot", "ReconstructedParticle::one_hot_encode_Higgs(jets_flavour)")
+            .Define("jets_isGbar", "jets_onehot[0]")
+            .Define("jets_isBbar", "jets_onehot[1]")
+            .Define("jets_isCbar", "jets_onehot[2]")
+            .Define("jets_isSbar", "jets_onehot[3]")
+            .Define("jets_isUbar", "jets_onehot[4]")
+            .Define("jets_isDbar", "jets_onehot[5]")
+            .Define("jets_isD",    "jets_onehot[7]")
+            .Define("jets_isU",    "jets_onehot[8]")
+            .Define("jets_isS",    "jets_onehot[9]")
+            .Define("jets_isC",    "jets_onehot[10]")
+            .Define("jets_isB",    "jets_onehot[11]")
+            .Define("jets_isG",    "jets_onehot[12]")
+            .Define("jets_isUndefined","jets_onehot[6]")
 
             #Aliasing to match Alexandre's files
             .Define("isU", "std::vector<int> isU; for(int i=0; i<jets_isU.size(); ++i){isU.push_back(jets_isU[i]+jets_isUbar[i]);}; return isU;")
@@ -218,25 +220,26 @@ class RDFanalysis():
             .Define("isS", "std::vector<int> isS; for(int i=0; i<jets_isS.size(); ++i){isS.push_back(jets_isS[i]+jets_isSbar[i]);}; return isS;")
             .Define("isC", "std::vector<int> isC; for(int i=0; i<jets_isC.size(); ++i){isC.push_back(jets_isC[i]+jets_isCbar[i]);}; return isC;")
             .Define("isB", "std::vector<int> isB; for(int i=0; i<jets_isB.size(); ++i){isB.push_back(jets_isB[i]+jets_isBbar[i]);}; return isB;")
+            .Define("isG", "std::vector<int> isG; for(int i=0; i<jets_isG.size(); ++i){isG.push_back(jets_isG[i]+jets_isGbar[i]);}; return isG;")
             .Define("isUndefined", "std::vector<int> isUndefined(jets_isUndefined.begin(), jets_isUndefined.end()); return isUndefined;")
 
 
             #Ghost Flavour 
-            .Redefine("jets_ghostFlavour", "ROOT::VecOps::RVec<float> flav; for(int i=0; i<jets_ghostFlavour.size(); ++i){if(jets_ghostFlavour.at(i)==Z_flavour.at(i)) flav.push_back(jets_ghostFlavour.at(i)); else flav.push_back(0);}return flav;")
-            #.Define("jets_flavour_placeholder","JetTaggingUtils::get_flavour(jets_ee_kt, Particle)")
-            .Define("jets_onehot_ghost", "ReconstructedParticle::one_hot_encode(jets_ghostFlavour)")
-            .Define("jets_isBbar_ghost", "jets_onehot_ghost[0]")
-            .Define("jets_isCbar_ghost", "jets_onehot_ghost[1]")
-            .Define("jets_isSbar_ghost", "jets_onehot_ghost[2]")
-            .Define("jets_isUbar_ghost", "jets_onehot_ghost[3]")
-            .Define("jets_isDbar_ghost", "jets_onehot_ghost[4]")
-            .Define("jets_isD_ghost",    "jets_onehot_ghost[6]")
-            .Define("jets_isU_ghost",    "jets_onehot_ghost[7]")
-            .Define("jets_isS_ghost",    "jets_onehot_ghost[8]")
-            .Define("jets_isC_ghost",    "jets_onehot_ghost[9]")
-            .Define("jets_isB_ghost",    "jets_onehot_ghost[10]")
-            .Define("jets_isUndefined_ghost","jets_onehot_ghost[5]")
-
+            .Redefine("jets_ghostFlavour", "ROOT::VecOps::RVec<float> flav; for(int i=0; i<jets_ghostFlavour.size(); ++i){if(jets_ghostFlavour.at(i)==H_flavour.at(i)) flav.push_back(jets_ghostFlavour.at(i)); else flav.push_back(0);}return flav;")
+            .Define("jets_onehot_ghost", "ReconstructedParticle::one_hot_encode_Higgs(jets_ghostFlavour)")
+            .Define("jets_isGbar_ghost", "jets_onehot_ghost[0]")
+            .Define("jets_isBbar_ghost", "jets_onehot_ghost[1]")
+            .Define("jets_isCbar_ghost", "jets_onehot_ghost[2]")
+            .Define("jets_isSbar_ghost", "jets_onehot_ghost[3]")
+            .Define("jets_isUbar_ghost", "jets_onehot_ghost[4]")
+            .Define("jets_isDbar_ghost", "jets_onehot_ghost[5]")
+            .Define("jets_isD_ghost",    "jets_onehot_ghost[7]")
+            .Define("jets_isU_ghost",    "jets_onehot_ghost[8]")
+            .Define("jets_isS_ghost",    "jets_onehot_ghost[9]")
+            .Define("jets_isC_ghost",    "jets_onehot_ghost[10]")
+            .Define("jets_isB_ghost",    "jets_onehot_ghost[11]")
+            .Define("jets_isG_ghost",    "jets_onehot_ghost[12]")
+            .Define("jets_isUndefined_ghost","jets_onehot_ghost[6]")
 
             #Aliasing to match Alexandre's files
             .Define("isU_ghost", "std::vector<int> isU_ghost; for(int i=0; i<jets_isU_ghost.size(); ++i){isU_ghost.push_back(jets_isU_ghost[i]+jets_isUbar_ghost[i]);}; return isU_ghost;")
@@ -244,52 +247,59 @@ class RDFanalysis():
             .Define("isS_ghost", "std::vector<int> isS_ghost; for(int i=0; i<jets_isS_ghost.size(); ++i){isS_ghost.push_back(jets_isS_ghost[i]+jets_isSbar_ghost[i]);}; return isS_ghost;")
             .Define("isC_ghost", "std::vector<int> isC_ghost; for(int i=0; i<jets_isC_ghost.size(); ++i){isC_ghost.push_back(jets_isC_ghost[i]+jets_isCbar_ghost[i]);}; return isC_ghost;")
             .Define("isB_ghost", "std::vector<int> isB_ghost; for(int i=0; i<jets_isB_ghost.size(); ++i){isB_ghost.push_back(jets_isB_ghost[i]+jets_isBbar_ghost[i]);}; return isB_ghost;")
+            .Define("isG_ghost", "std::vector<int> isG_ghost; for(int i=0; i<jets_isG_ghost.size(); ++i){isG_ghost.push_back(jets_isG_ghost[i]+jets_isGbar_ghost[i]);}; return isG_ghost;")
             .Define("isUndefined_ghost", "std::vector<int> isUndefined_ghost(jets_isUndefined_ghost.begin(), jets_isUndefined_ghost.end()); return isUndefined_ghost;")
+            
 
 
 
-            #Z_flavour
+
+            #H_flavour
             #.Define("jets_flavour_placeholder","JetTaggingUtils::get_flavour(jets_ee_kt, Particle)")
-            .Define("jets_onehot_Z", "ReconstructedParticle::one_hot_encode(Z_flavour)")
-            .Define("jets_isBbar_Z", "jets_onehot_Z[0]")
-            .Define("jets_isCbar_Z", "jets_onehot_Z[1]")
-            .Define("jets_isSbar_Z", "jets_onehot_Z[2]")
-            .Define("jets_isUbar_Z", "jets_onehot_Z[3]")
-            .Define("jets_isDbar_Z", "jets_onehot_Z[4]")
-            .Define("jets_isD_Z",    "jets_onehot_Z[6]")
-            .Define("jets_isU_Z",    "jets_onehot_Z[7]")
-            .Define("jets_isS_Z",    "jets_onehot_Z[8]")
-            .Define("jets_isC_Z",    "jets_onehot_Z[9]")
-            .Define("jets_isB_Z",    "jets_onehot_Z[10]")
-            .Define("jets_isUndefined_Z","jets_onehot_Z[5]")
+            .Define("jets_onehot_H", "ReconstructedParticle::one_hot_encode_Higgs(H_flavour)")
+            .Define("jets_isGbar_H", "jets_onehot_H[0]")
+            .Define("jets_isBbar_H", "jets_onehot_H[1]")
+            .Define("jets_isCbar_H", "jets_onehot_H[2]")
+            .Define("jets_isSbar_H", "jets_onehot_H[3]")
+            .Define("jets_isUbar_H", "jets_onehot_H[4]")
+            .Define("jets_isDbar_H", "jets_onehot_H[5]")
+            .Define("jets_isD_H",    "jets_onehot_H[7]")
+            .Define("jets_isU_H",    "jets_onehot_H[8]")
+            .Define("jets_isS_H",    "jets_onehot_H[9]")
+            .Define("jets_isC_H",    "jets_onehot_H[10]")
+            .Define("jets_isB_H",    "jets_onehot_H[11]")
+            .Define("jets_isG_H",    "jets_onehot_H[12]")
+            .Define("jets_isUndefined_H","jets_onehot_H[6]")
 
             #Aliasing to match Alexandre's files
-            .Define("isU_Z", "std::vector<int> isU_Z; for(int i=0; i<jets_isU_Z.size(); ++i){isU_Z.push_back(jets_isU_Z[i]+jets_isUbar_Z[i]);}; return isU_Z;")
-            .Define("isD_Z", "std::vector<int> isD_Z; for(int i=0; i<jets_isD_Z.size(); ++i){isD_Z.push_back(jets_isD_Z[i]+jets_isDbar_Z[i]);}; return isD_Z;")
-            .Define("isS_Z", "std::vector<int> isS_Z; for(int i=0; i<jets_isS_Z.size(); ++i){isS_Z.push_back(jets_isS_Z[i]+jets_isSbar_Z[i]);}; return isS_Z;")
-            .Define("isC_Z", "std::vector<int> isC_Z; for(int i=0; i<jets_isC_Z.size(); ++i){isC_Z.push_back(jets_isC_Z[i]+jets_isCbar_Z[i]);}; return isC_Z;")
-            .Define("isB_Z", "std::vector<int> isB_Z; for(int i=0; i<jets_isB_Z.size(); ++i){isB_Z.push_back(jets_isB_Z[i]+jets_isBbar_Z[i]);}; return isB_Z;")
-            .Define("isUndefined_Z", "std::vector<int> isUndefined_Z(jets_isUndefined_Z.begin(), jets_isUndefined_Z.end()); return isUndefined_Z;")
+            .Define("isU_H", "std::vector<int> isU_H; for(int i=0; i<jets_isU_H.size(); ++i){isU_H.push_back(jets_isU_H[i]+jets_isUbar_H[i]);}; return isU_H;")
+            .Define("isD_H", "std::vector<int> isD_H; for(int i=0; i<jets_isD_H.size(); ++i){isD_H.push_back(jets_isD_H[i]+jets_isDbar_H[i]);}; return isD_H;")
+            .Define("isS_H", "std::vector<int> isS_H; for(int i=0; i<jets_isS_H.size(); ++i){isS_H.push_back(jets_isS_H[i]+jets_isSbar_H[i]);}; return isS_H;")
+            .Define("isC_H", "std::vector<int> isC_H; for(int i=0; i<jets_isC_H.size(); ++i){isC_H.push_back(jets_isC_H[i]+jets_isCbar_H[i]);}; return isC_H;")
+            .Define("isB_H", "std::vector<int> isB_H; for(int i=0; i<jets_isB_H.size(); ++i){isB_H.push_back(jets_isB_H[i]+jets_isBbar_H[i]);}; return isB_H;")
+            .Define("isG_H", "std::vector<int> isG_H; for(int i=0; i<jets_isG_H.size(); ++i){isG_H.push_back(jets_isG_H[i]+jets_isGbar_H[i]);}; return isG_H;")
+            .Define("isUndefined_H", "std::vector<int> isUndefined_H(jets_isUndefined_H.begin(), jets_isUndefined_H.end()); return isUndefined_H;")
 
 
 
 
             #Ghost Flavour w/ angle=0.3 and partonStatus=70s
-            .Redefine("jets_ghostFlavour_angle03status70", "ROOT::VecOps::RVec<float> flav; for(int i=0; i<jets_ghostFlavour_angle03status70.size(); ++i){if(jets_ghostFlavour_angle03status70.at(i)==Z_flavour.at(i)) flav.push_back(jets_ghostFlavour_angle03status70.at(i)); else flav.push_back(0);}return flav;")
+            .Redefine("jets_ghostFlavour_angle03status70", "ROOT::VecOps::RVec<float> flav; for(int i=0; i<jets_ghostFlavour_angle03status70.size(); ++i){if(jets_ghostFlavour_angle03status70.at(i)==H_flavour.at(i)) flav.push_back(jets_ghostFlavour_angle03status70.at(i)); else flav.push_back(0);}return flav;")
             #.Define("jets_flavour_placeholder","JetTaggingUtils::get_flavour(jets_ee_kt, Particle)")
-            .Define("jets_onehot_ghost_angle03status70", "ReconstructedParticle::one_hot_encode(jets_ghostFlavour_angle03status70)")
-            .Define("jets_isBbar_ghost_angle03status70", "jets_onehot_ghost_angle03status70[0]")
-            .Define("jets_isCbar_ghost_angle03status70", "jets_onehot_ghost_angle03status70[1]")
-            .Define("jets_isSbar_ghost_angle03status70", "jets_onehot_ghost_angle03status70[2]")
-            .Define("jets_isUbar_ghost_angle03status70", "jets_onehot_ghost_angle03status70[3]")
-            .Define("jets_isDbar_ghost_angle03status70", "jets_onehot_ghost_angle03status70[4]")
-            .Define("jets_isD_ghost_angle03status70",    "jets_onehot_ghost_angle03status70[6]")
-            .Define("jets_isU_ghost_angle03status70",    "jets_onehot_ghost_angle03status70[7]")
-            .Define("jets_isS_ghost_angle03status70",    "jets_onehot_ghost_angle03status70[8]")
-            .Define("jets_isC_ghost_angle03status70",    "jets_onehot_ghost_angle03status70[9]")
-            .Define("jets_isB_ghost_angle03status70",    "jets_onehot_ghost_angle03status70[10]")
-            .Define("jets_isUndefined_ghost_angle03status70","jets_onehot_ghost_angle03status70[5]")
-
+            .Define("jets_onehot_ghost_angle03status70", "ReconstructedParticle::one_hot_encode_Higgs(jets_ghostFlavour_angle03status70)")
+            .Define("jets_isGbar_ghost_angle03status70", "jets_onehot_ghost_angle03status70[0]")
+            .Define("jets_isBbar_ghost_angle03status70", "jets_onehot_ghost_angle03status70[1]")
+            .Define("jets_isCbar_ghost_angle03status70", "jets_onehot_ghost_angle03status70[2]")
+            .Define("jets_isSbar_ghost_angle03status70", "jets_onehot_ghost_angle03status70[3]")
+            .Define("jets_isUbar_ghost_angle03status70", "jets_onehot_ghost_angle03status70[4]")
+            .Define("jets_isDbar_ghost_angle03status70", "jets_onehot_ghost_angle03status70[5]")
+            .Define("jets_isD_ghost_angle03status70",    "jets_onehot_ghost_angle03status70[7]")
+            .Define("jets_isU_ghost_angle03status70",    "jets_onehot_ghost_angle03status70[8]")
+            .Define("jets_isS_ghost_angle03status70",    "jets_onehot_ghost_angle03status70[9]")
+            .Define("jets_isC_ghost_angle03status70",    "jets_onehot_ghost_angle03status70[10]")
+            .Define("jets_isB_ghost_angle03status70",    "jets_onehot_ghost_angle03status70[11]")
+            .Define("jets_isG_ghost_angle03status70",    "jets_onehot_ghost_angle03status70[12]")
+            .Define("jets_isUndefined_ghost_angle03status70","jets_onehot_ghost_angle03status70[6]")
 
             #Aliasing to match Alexandre's files
             .Define("isU_ghost_angle03status70", "std::vector<int> isU_ghost_angle03status70; for(int i=0; i<jets_isU_ghost_angle03status70.size(); ++i){isU_ghost_angle03status70.push_back(jets_isU_ghost_angle03status70[i]+jets_isUbar_ghost_angle03status70[i]);}; return isU_ghost_angle03status70;")
@@ -297,26 +307,28 @@ class RDFanalysis():
             .Define("isS_ghost_angle03status70", "std::vector<int> isS_ghost_angle03status70; for(int i=0; i<jets_isS_ghost_angle03status70.size(); ++i){isS_ghost_angle03status70.push_back(jets_isS_ghost_angle03status70[i]+jets_isSbar_ghost_angle03status70[i]);}; return isS_ghost_angle03status70;")
             .Define("isC_ghost_angle03status70", "std::vector<int> isC_ghost_angle03status70; for(int i=0; i<jets_isC_ghost_angle03status70.size(); ++i){isC_ghost_angle03status70.push_back(jets_isC_ghost_angle03status70[i]+jets_isCbar_ghost_angle03status70[i]);}; return isC_ghost_angle03status70;")
             .Define("isB_ghost_angle03status70", "std::vector<int> isB_ghost_angle03status70; for(int i=0; i<jets_isB_ghost_angle03status70.size(); ++i){isB_ghost_angle03status70.push_back(jets_isB_ghost_angle03status70[i]+jets_isBbar_ghost_angle03status70[i]);}; return isB_ghost_angle03status70;")
+            .Define("isG_ghost_angle03status70", "std::vector<int> isG_ghost_angle03status70; for(int i=0; i<jets_isG_ghost_angle03status70.size(); ++i){isG_ghost_angle03status70.push_back(jets_isG_ghost_angle03status70[i]+jets_isGbar_ghost_angle03status70[i]);}; return isG_ghost_angle03status70;")
             .Define("isUndefined_ghost_angle03status70", "std::vector<int> isUndefined_ghost_angle03status70(jets_isUndefined_ghost_angle03status70.begin(), jets_isUndefined_ghost_angle03status70.end()); return isUndefined_ghost_angle03status70;")
 
 
 
             #Ghost Flavour w/ angle=0.3 and partonStatus=20s
-            .Redefine("jets_ghostFlavour_angle03status20", "ROOT::VecOps::RVec<float> flav; for(int i=0; i<jets_ghostFlavour_angle03status20.size(); ++i){if(jets_ghostFlavour_angle03status20.at(i)==Z_flavour.at(i)) flav.push_back(jets_ghostFlavour_angle03status20.at(i)); else flav.push_back(0);}return flav;")
+            .Redefine("jets_ghostFlavour_angle03status20", "ROOT::VecOps::RVec<float> flav; for(int i=0; i<jets_ghostFlavour_angle03status20.size(); ++i){if(jets_ghostFlavour_angle03status20.at(i)==H_flavour.at(i)) flav.push_back(jets_ghostFlavour_angle03status20.at(i)); else flav.push_back(0);}return flav;")
             #.Define("jets_flavour_placeholder","JetTaggingUtils::get_flavour(jets_ee_kt, Particle)")
-            .Define("jets_onehot_ghost_angle03status20", "ReconstructedParticle::one_hot_encode(jets_ghostFlavour_angle03status20)")
-            .Define("jets_isBbar_ghost_angle03status20", "jets_onehot_ghost_angle03status20[0]")
-            .Define("jets_isCbar_ghost_angle03status20", "jets_onehot_ghost_angle03status20[1]")
-            .Define("jets_isSbar_ghost_angle03status20", "jets_onehot_ghost_angle03status20[2]")
-            .Define("jets_isUbar_ghost_angle03status20", "jets_onehot_ghost_angle03status20[3]")
-            .Define("jets_isDbar_ghost_angle03status20", "jets_onehot_ghost_angle03status20[4]")
-            .Define("jets_isD_ghost_angle03status20",    "jets_onehot_ghost_angle03status20[6]")
-            .Define("jets_isU_ghost_angle03status20",    "jets_onehot_ghost_angle03status20[7]")
-            .Define("jets_isS_ghost_angle03status20",    "jets_onehot_ghost_angle03status20[8]")
-            .Define("jets_isC_ghost_angle03status20",    "jets_onehot_ghost_angle03status20[9]")
-            .Define("jets_isB_ghost_angle03status20",    "jets_onehot_ghost_angle03status20[10]")
-            .Define("jets_isUndefined_ghost_angle03status20","jets_onehot_ghost_angle03status20[5]")
-
+            .Define("jets_onehot_ghost_angle03status20", "ReconstructedParticle::one_hot_encode_Higgs(jets_ghostFlavour_angle03status20)")
+            .Define("jets_isGbar_ghost_angle03status20", "jets_onehot_ghost_angle03status20[0]")
+            .Define("jets_isBbar_ghost_angle03status20", "jets_onehot_ghost_angle03status20[1]")
+            .Define("jets_isCbar_ghost_angle03status20", "jets_onehot_ghost_angle03status20[2]")
+            .Define("jets_isSbar_ghost_angle03status20", "jets_onehot_ghost_angle03status20[3]")
+            .Define("jets_isUbar_ghost_angle03status20", "jets_onehot_ghost_angle03status20[4]")
+            .Define("jets_isDbar_ghost_angle03status20", "jets_onehot_ghost_angle03status20[5]")
+            .Define("jets_isD_ghost_angle03status20",    "jets_onehot_ghost_angle03status20[7]")
+            .Define("jets_isU_ghost_angle03status20",    "jets_onehot_ghost_angle03status20[8]")
+            .Define("jets_isS_ghost_angle03status20",    "jets_onehot_ghost_angle03status20[9]")
+            .Define("jets_isC_ghost_angle03status20",    "jets_onehot_ghost_angle03status20[10]")
+            .Define("jets_isB_ghost_angle03status20",    "jets_onehot_ghost_angle03status20[11]")
+            .Define("jets_isG_ghost_angle03status20",    "jets_onehot_ghost_angle03status20[12]")
+            .Define("jets_isUndefined_ghost_angle03status20","jets_onehot_ghost_angle03status20[6]")
 
             #Aliasing to match Alexandre's files
             .Define("isU_ghost_angle03status20", "std::vector<int> isU_ghost_angle03status20; for(int i=0; i<jets_isU_ghost_angle03status20.size(); ++i){isU_ghost_angle03status20.push_back(jets_isU_ghost_angle03status20[i]+jets_isUbar_ghost_angle03status20[i]);}; return isU_ghost_angle03status20;")
@@ -324,6 +336,7 @@ class RDFanalysis():
             .Define("isS_ghost_angle03status20", "std::vector<int> isS_ghost_angle03status20; for(int i=0; i<jets_isS_ghost_angle03status20.size(); ++i){isS_ghost_angle03status20.push_back(jets_isS_ghost_angle03status20[i]+jets_isSbar_ghost_angle03status20[i]);}; return isS_ghost_angle03status20;")
             .Define("isC_ghost_angle03status20", "std::vector<int> isC_ghost_angle03status20; for(int i=0; i<jets_isC_ghost_angle03status20.size(); ++i){isC_ghost_angle03status20.push_back(jets_isC_ghost_angle03status20[i]+jets_isCbar_ghost_angle03status20[i]);}; return isC_ghost_angle03status20;")
             .Define("isB_ghost_angle03status20", "std::vector<int> isB_ghost_angle03status20; for(int i=0; i<jets_isB_ghost_angle03status20.size(); ++i){isB_ghost_angle03status20.push_back(jets_isB_ghost_angle03status20[i]+jets_isBbar_ghost_angle03status20[i]);}; return isB_ghost_angle03status20;")
+            .Define("isG_ghost_angle03status20", "std::vector<int> isG_ghost_angle03status20; for(int i=0; i<jets_isG_ghost_angle03status20.size(); ++i){isG_ghost_angle03status20.push_back(jets_isG_ghost_angle03status20[i]+jets_isGbar_ghost_angle03status20[i]);}; return isG_ghost_angle03status20;")
             .Define("isUndefined_ghost_angle03status20", "std::vector<int> isUndefined_ghost_angle03status20(jets_isUndefined_ghost_angle03status20.begin(), jets_isUndefined_ghost_angle03status20.end()); return isUndefined_ghost_angle03status20;")
 
             
@@ -513,7 +526,7 @@ class RDFanalysis():
             ##.Define("is_Kaon_smearedUniform001",          "ReconstructedParticle::is_Kaon_smearedUniform001(PID)")
             
             #Redefinitions for consistency...
-            .Redefine("Z_flavour", "return std::vector<int>(Z_flavour.begin(), Z_flavour.end());")
+            .Redefine("H_flavour", "return std::vector<int>(H_flavour.begin(), H_flavour.end());")
             .Redefine("jets_p", "return std::vector<float>(jets_p.begin(), jets_p.end());")
             .Redefine("jets_px", "return std::vector<float>(jets_px.begin(), jets_px.end());")
             .Redefine("jets_py", "return std::vector<float>(jets_py.begin(), jets_py.end());")
@@ -581,31 +594,36 @@ class RDFanalysis():
             "isS",
             "isC",
             "isB",
+            "isG",
             "isUndefined",
-            "Z_flavour",
+            "H_flavour",
             "isU_ghost",
             "isD_ghost",
             "isS_ghost",
             "isC_ghost",
             "isB_ghost",
+            "isG_ghost",
             "isUndefined_ghost",
-            "isU_Z",
-            "isD_Z",
-            "isS_Z",
-            "isC_Z",
-            "isB_Z",
-            "isUndefined_Z",
+            "isU_H",
+            "isD_H",
+            "isS_H",
+            "isC_H",
+            "isB_H",
+            "isG_H",
+            "isUndefined_H",
             "isU_ghost_angle03status70",
             "isD_ghost_angle03status70",
             "isS_ghost_angle03status70",
             "isC_ghost_angle03status70",
             "isB_ghost_angle03status70",
+            "isG_ghost_angle03status70",
             "isUndefined_ghost_angle03status70",
             "isU_ghost_angle03status20",
             "isD_ghost_angle03status20",
             "isS_ghost_angle03status20",
             "isC_ghost_angle03status20",
             "isB_ghost_angle03status20",
+            "isG_ghost_angle03status20",
             "isUndefined_ghost_angle03status20",
             
             # Jet-level Variables

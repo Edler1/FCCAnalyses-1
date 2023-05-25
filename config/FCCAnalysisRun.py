@@ -194,7 +194,17 @@ def getEntries(f):
 def getProcessInfoYaml(process, prodTag):
     doc = None
     if prodTag[-1]!="/":prodTag+="/"
+    #yamlfile="root://eospublic.cern.ch/"+os.path.join(os.getenv('FCCDICTSDIR', deffccdicts), '')+"yaml/"+prodTag+process+'/merge.yaml'
     yamlfile=os.path.join(os.getenv('FCCDICTSDIR', deffccdicts), '')+"yaml/"+prodTag+process+'/merge.yaml'
+    if not os.path.isfile('.yamlfile/merge_{0}.yaml'.format(process)):
+        print("yaml dict file not found. Please type lxplus password for scp.")
+        os.system("scp {2}@lxplus.cern.ch:{0} .yamlfile/merge_{1}.yaml".format(yamlfile, process, os.getlogin()))
+    #use the tmp .yaml/file and work it out...
+    #os.system('sshpass -p \'password\' scp eploerer@lxplus.cern.ch:/afs/cern.ch/work/f/fccsw/public/FCCDicts/yaml/FCCee/spring2021/IDEA/p8_ee_Zuds_ecm91/merge.yaml tmp_file')
+    print("====================================")
+    print("yamlfile="+yamlfile)
+    print("====================================")
+    yamlfile='.yamlfile/merge_{0}.yaml'.format(process)
     with open(yamlfile) as ftmp:
         try:
             doc = yaml.load(ftmp, Loader=yaml.FullLoader)
@@ -266,7 +276,6 @@ def getCommandOutput(command):
 
 #__________________________________________________________
 def SubmitToCondor(cmd,nbtrials):
-    print("BATCH BEING CALLLED")
     submissionStatus=0
     cmd=cmd.replace('//','/') # -> dav : is it needed?
     for i in range(nbtrials):
@@ -351,7 +360,6 @@ def runRDF(rdfModule, inputlist, outFile, nevt, args):
 
 #__________________________________________________________
 def sendToBatch(rdfModule, chunkList, process, analysisFile):
-    print("JOB SENT TO BATCH")
     localDir = os.environ["LOCAL_DIR"]
     logDir   = localDir+"/BatchOutputs/{}/{}".format(date,process)
     if not os.path.exists(logDir):
@@ -380,12 +388,10 @@ def sendToBatch(rdfModule, chunkList, process, analysisFile):
 
         subprocess.getstatusoutput('chmod 777 %s'%(frunname))
         frun.write('#!/bin/bash\n')
-        frun.write('cd /afs/cern.ch/user/e/eploerer/private/FCCAnalyses_latest/FCCAnalyses\n')
-        frun.write('source ./setup.sh\n')
-        #frun.write('source /cvmfs/sw.hsf.org/key4hep/setup.sh\n')
-        #frun.write('export PYTHONPATH=$LOCAL_DIR:$PYTHONPATH\n')
-        #frun.write('export LD_LIBRARY_PATH=$LOCAL_DIR/install/lib:$LD_LIBRARY_PATH\n')
-        #frun.write('export ROOT_INCLUDE_PATH=$LOCAL_DIR/install/include/FCCAnalyses:$ROOT_INCLUDE_PATH\n')
+        frun.write('source /cvmfs/sw.hsf.org/key4hep/setup.sh\n')
+        frun.write('export PYTHONPATH=$LOCAL_DIR:$PYTHONPATH\n')
+        frun.write('export LD_LIBRARY_PATH=$LOCAL_DIR/install/lib:$LD_LIBRARY_PATH\n')
+        frun.write('export ROOT_INCLUDE_PATH=$LOCAL_DIR/install/include/FCCAnalyses:$ROOT_INCLUDE_PATH\n')
 
         #add userBatchConfig if any
         if userBatchConfig!="":
@@ -396,32 +402,22 @@ def sendToBatch(rdfModule, chunkList, process, analysisFile):
                 for line in configFile:
                     frun.write(line+'\n')
 
-        #frun.write('mkdir job{}_chunk{}\n'.format(process,ch))
-        #frun.write('if [ -d "{}" ]; then\n'.format(process))#job{}_chunk{}\n'.format(process,ch))
-        #frun.write('    mkdir {}\n'.format(process))#job{}_chunk{}\n'.format(process,ch))
-        #frun.write('fi\n')#job{}_chunk{}\n'.format(process,ch))
-        ###frun.write('cd {}\n'.format(process))#job{}_chunk{}\n'.format(process,ch))
-        #frun.write('cd job{}_chunk{}\n'.format(process,ch))
+        frun.write('mkdir job{}_chunk{}\n'.format(process,ch))
+        frun.write('cd job{}_chunk{}\n'.format(process,ch))
 
         if not os.path.isabs(outputDir):
-            #frun.write('$LOCAL_DIR/bin/fccanalysis run {} --batch --output {}chunk{}.root --files-list '.format(analysisFile, outputDir, ch))
-            frun.write('fccanalysis run {} --batch --output {}{}/chunk{}.root --files-list '.format(analysisFile, outputDir, process,ch))
+            frun.write('$LOCAL_DIR/bin/fccanalysis run {} --batch --output {}chunk{}.root --files-list '.format(analysisFile, outputDir, ch))
         else:
-            #frun.write('$LOCAL_DIR/bin/fccanalysis run {} --batch --output {}{}/chunk{}.root --files-list '.format(analysisFile, outputDir, process,ch))
-            frun.write('fccanalysis run {} --batch --output {}{}/chunk{}.root --files-list '.format(analysisFile, outputDir, process,ch))
+            frun.write('$LOCAL_DIR/bin/fccanalysis run {} --batch --output {}{}/chunk{}.root --files-list '.format(analysisFile, outputDir, process,ch))
 
         for ff in range(len(chunkList[ch])):
             frun.write(' %s'%(chunkList[ch][ff]))
         frun.write('\n')
         if not os.path.isabs(outputDir):
             if outputDirEos=="":
-                #frun.write('cp {}chuk{}.root  {}/{}/{}/chunk{}.root\n'.format(outputDir,ch,localDir,outputDir,process,ch))
-                frun.write('cp {}chunk{}.root  {}/{}{}/chunk{}.root\n'.format(outputDir,ch,localDir,outputDir,process,ch))
-                #frun.write('rm {}chunk{}.root'.format(outputDir, ch))
+                frun.write('cp {}chunk{}.root  {}/{}/{}/chunk{}.root\n'.format(outputDir,ch,localDir,outputDir,process,ch))
             else:
-                #frun.write('xrdcp {}chunk{}.root  root://{}.cern.ch/{}/{}/chunk{}.root\n'.format(outputDir,ch,eosType,outputDirEos,process,ch))
-                frun.write('xrdcp {}chunk{}.root  root://{}.cern.ch/{}{}/chunk{}.root\n'.format(outputDir,ch,eosType,outputDirEos,process,ch))
-                frun.write('rm {}chunk{}.root'.format(outputDir, ch))
+                frun.write('xrdcp {}chunk{}.root  root://{}.cern.ch/{}/{}/chunk{}.root\n'.format(outputDir,ch,eosType,outputDirEos,process,ch))
         else:
             if outputDirEos!="":
                 frun.write('xrdcp {}chunk{}.root  root://{}.cern.ch/{}/{}/chunk{}.root\n'.format(outputDir,ch,eosType,outputDirEos,process,ch))
@@ -457,12 +453,19 @@ def sendToBatch(rdfModule, chunkList, process, analysisFile):
 
     cmdBatch="condor_submit {}".format(frunfull_condor)
     print ('----> batch command  : ',cmdBatch)
-
-    #print("EXITING NOW")
-    #exit()
     job=SubmitToCondor(cmdBatch,10)
 
-
+#__________________________________________________________
+def addeosType(fileName):
+    sfileName=fileName.split('/')
+    if sfileName[1]=='experiment':
+        fileName='root://eospublic.cern.ch/'+fileName
+    elif sfileName[1]=='user' or sfileName[1].contains('home-'):
+        fileName='root://eosuser.cern.ch/'+fileName
+    else:
+        print('unknown eos type, please check with developers as it might not run with best performances')
+    return fileName
+    
 #__________________________________________________________
 def runLocal(rdfModule, fileList, args):
     #Create list of files to be Processed
@@ -471,8 +474,18 @@ def runLocal(rdfModule, fileList, args):
     nevents_meta = 0
     nevents_local = 0
     for fileName in fileList:
+
+        if fileName.split('/')[0]=='eos':
+            fileName=addeosType(fileName)
+
         fileListRoot.push_back(fileName)
         print ("   ",fileName)
+        #tf=ROOT.TFile.Open("root://eospublic.cern.ch/"+str(fileName),"READ")
+        #fileName_split = fileName.split('/')
+        #fileName = '/user/eploerer/sourceFiles/'+fileName.split('/')[len(fileName.split('/'))-2]+'/'+fileName.split('/')[len(fileName.split('/'))-1]
+        #print("====================================")
+        #print("fileName="+fileName)
+        #print("====================================")
         tf=ROOT.TFile.Open(str(fileName),"READ")
         tf.cd()
         for key in tf.GetListOfKeys():
@@ -577,9 +590,6 @@ def runStages(args, rdfModule, preprocess, analysisFile):
 
     #check if batch mode and set start and end file from original list
     runBatch = getElement(rdfModule,"runBatch")
-    print("XXXXXXXXXXXXX:")
-    print(runBatch)
-    print("XXXXXXXXXXXXX:")
 
     #check if the process list is specified
     processList = getElement(rdfModule,"processList")
@@ -627,9 +637,6 @@ def runStages(args, rdfModule, preprocess, analysisFile):
                 runLocal(rdfModule, chunkList[ch], args)
 
             #run on batch
-        print("XXXXXXXX")
-        print("runBatch set to : "+str(runBatch))
-        print("XXXXXXXX")
         if runBatch == True:
             print ('----> Running on Batch')
             if len(chunkList)==1:

@@ -64,7 +64,7 @@ ROOT::VecOps::RVec<int> get_flavour(ROOT::VecOps::RVec<fastjet::PseudoJet> in,
 }
 
 ROOT::VecOps::RVec<int> find_ghosts(const ROOT::VecOps::RVec<edm4hep::MCParticleData> & Particle,
-                                const ROOT::VecOps::RVec<int> & ind) {
+                                    const ROOT::VecOps::RVec<int> & ind) {
 
   ROOT::VecOps::RVec<int> MCindices;
 
@@ -115,14 +115,66 @@ ROOT::VecOps::RVec<int> find_ghosts(const ROOT::VecOps::RVec<edm4hep::MCParticle
   return MCindices;
 }
 
+ROOT::VecOps::RVec<int> find_ghosts_by_status(const ROOT::VecOps::RVec<edm4hep::MCParticleData> & Particle,
+                                             const ROOT::VecOps::RVec<int> & ind,
+                                             std::vector<int> partonStatus) {
+
+  ROOT::VecOps::RVec<int> MCindices;
+  
+  //std::vector<int> partonStatus = {20, 30};
+
+
+  // In loop below ghosts are selected from MCParticle collection
+  for (size_t i = 0; i < Particle.size(); ++i) {
+    bool isGhost = false;
+
+    // Ghost partons that have correct PDG ID
+    if ((Particle[i].generatorStatus>partonStatus[0]) && (Particle[i].generatorStatus<partonStatus[1])){
+      if (std::abs(Particle[i].PDG)<=5||Particle[i].PDG==21) {
+        isGhost = true;
+      }
+    }
+
+    // Ghost hadrons are selected as b/c hadrons that do not have b/c hadrons as daughters
+    if ((std::abs(int((Particle[i].PDG/100))%10)==5)||(std::abs(int((Particle[i].PDG/1000))%10)==5)){
+      isGhost = true;
+      auto daughters = MCParticle::get_list_of_particles_from_decay(i, Particle, ind);
+      for(auto& daughter_index : daughters){
+        if((std::abs(int((Particle[daughter_index].PDG/100))%10)==5)||(std::abs(int((Particle[daughter_index].PDG/1000))%10)==5)){
+          isGhost = false;
+          break;
+        }
+      }
+    
+    }
+    else if ((std::abs(int((Particle[i].PDG/100))%10)==4)||(std::abs(int((Particle[i].PDG/1000))%10)==4)){
+      isGhost = true;
+      auto daughters = MCParticle::get_list_of_particles_from_decay(i, Particle, ind);
+      for(auto& daughter_index : daughters){
+        if((std::abs(int((Particle[daughter_index].PDG/100))%10)==4)||(std::abs(int((Particle[daughter_index].PDG/1000))%10)==4)){
+          isGhost = false;
+          break;
+        }
+      }
+    }
+    if (isGhost) MCindices.push_back(i);
+  }
+  return MCindices;
+}
+
 JetClusteringUtils::FCCAnalysesJet set_flavour(const ROOT::VecOps::RVec<edm4hep::MCParticleData> & Particle,
                                 const ROOT::VecOps::RVec<int> & MCindices,
                                 JetClusteringUtils::FCCAnalysesJet & jets,
-                                std::vector<fastjet::PseudoJet> & pseudoJets) {
+                                std::vector<fastjet::PseudoJet> & pseudoJets,
+                                float delAngle) {
+
   unsigned int index = pseudoJets.size();
   ROOT::VecOps::RVec<int> pdg(pseudoJets.size(),0);
   ROOT::VecOps::RVec<int> ghostStatus(pseudoJets.size(),0);
   ROOT::VecOps::RVec<int> MCindex(pseudoJets.size(),-1);
+  ROOT::VecOps::RVec<float> px_vec(pseudoJets.size(),0);
+  ROOT::VecOps::RVec<float> py_vec(pseudoJets.size(),0);
+  ROOT::VecOps::RVec<float> pz_vec(pseudoJets.size(),0);
 
   ROOT::VecOps::RVec<int> partonStatus = {20, 30};
 
@@ -161,6 +213,9 @@ JetClusteringUtils::FCCAnalysesJet set_flavour(const ROOT::VecOps::RVec<edm4hep:
     pseudoJets.emplace_back(px*pow(10, -18), py*pow(10, -18), pz*pow(10, -18), E*pow(10, -18));
     pseudoJets.back().set_user_index(index);
     ++index;
+    px_vec.push_back(px);
+    py_vec.push_back(py);
+    pz_vec.push_back(pz);
   
   }
   JetClusteringUtils::flav_details flavour_details;
@@ -208,18 +263,36 @@ JetClusteringUtils::FCCAnalysesJet set_flavour(const ROOT::VecOps::RVec<edm4hep:
   
   ROOT::VecOps::RVec<int> partonFlavs;
   ROOT::VecOps::RVec<int> hadronFlavs;
-  for (auto& consti_index : jetconstituents) {
+  //for (auto& consti_index : jetconstituents) {
+  for (size_t j = 0; j < jetconstituents.size(); ++j) {
+
+    auto & consti_index = jetconstituents[j];
+
     int partonFlav = 0;
     float partonMom2 = 0;
     float partonMom2_b = 0;
     float partonMom2_c = 0;
-  int hadronFlav = 0;
-  float hadronMom2_b = 0;
-  float hadronMom2_c = 0;
+    int hadronFlav = 0;
+    float hadronMom2_b = 0;
+    float hadronMom2_c = 0;
     for (auto& i : consti_index) {
 
       //Parton-flav loop 
       if (ghostStatus[i]==1) {
+        if (delAngle>0) {
+          float dot = ghostJets_ee_kt[j].px() * Particle[MCindex[i]].momentum.x
+                      + ghostJets_ee_kt[j].py() * Particle[MCindex[i]].momentum.y
+                      + ghostJets_ee_kt[j].pz() * Particle[MCindex[i]].momentum.z;
+          float lenSq1 = ghostJets_ee_kt[j].px() * ghostJets_ee_kt[j].px()
+                         + ghostJets_ee_kt[j].py() * ghostJets_ee_kt[j].py()
+                         + ghostJets_ee_kt[j].pz() * ghostJets_ee_kt[j].pz();
+          float lenSq2 = Particle[MCindex[i]].momentum.x * Particle[MCindex[i]].momentum.x
+                         + Particle[MCindex[i]].momentum.y * Particle[MCindex[i]].momentum.y
+                         + Particle[MCindex[i]].momentum.z * Particle[MCindex[i]].momentum.z;
+          float norm = sqrt(lenSq1*lenSq2);
+          float angle = acos(dot/norm);
+          if (angle>delAngle) continue;
+        }
         if (std::abs(pdg[i])==5){
           if (pseudoJets[i].modp2()>partonMom2_b){
             partonFlav = pdg[i];
@@ -312,6 +385,30 @@ ROOT::VecOps::RVec<int> get_flavour(const ROOT::VecOps::RVec<edm4hep::MCParticle
 
 }
 
+ROOT::VecOps::RVec<int> get_flavour(const ROOT::VecOps::RVec<edm4hep::MCParticleData> & Particle,
+                                    const ROOT::VecOps::RVec<int> & ind,
+                                    JetClusteringUtils::FCCAnalysesJet & jets,
+                                    std::vector<fastjet::PseudoJet> & pseudoJets,
+                                    float dAngle,
+                                    int pStatus){
+  ROOT::VecOps::RVec<int> MCindices;
+  if (pStatus==20){
+    std::vector<int> partonStatus{20, 30};
+    MCindices = JetTaggingUtils::find_ghosts_by_status(Particle, ind, partonStatus);
+  } 
+  else if (pStatus==70){
+    std::vector<int> partonStatus{70, 80};
+    MCindices = JetTaggingUtils::find_ghosts_by_status(Particle, ind, partonStatus);
+  } 
+  else {
+    // if invalid pStatus, resort to default
+    MCindices = JetTaggingUtils::find_ghosts(Particle, ind);
+  }
+  jets = JetTaggingUtils::set_flavour(Particle, MCindices, jets, pseudoJets, dAngle);
+  
+  return get_flavour(jets);
+
+}
 
 ROOT::VecOps::RVec<int> get_Z_flavour(ROOT::VecOps::RVec<fastjet::PseudoJet> in, ROOT::VecOps::RVec<edm4hep::MCParticleData> MCin){
   int flav = 0;
@@ -325,6 +422,33 @@ ROOT::VecOps::RVec<int> get_Z_flavour(ROOT::VecOps::RVec<fastjet::PseudoJet> in,
   return result;
 }
 
+ROOT::VecOps::RVec<int> get_H_flavour(ROOT::VecOps::RVec<fastjet::PseudoJet> in, ROOT::VecOps::RVec<edm4hep::MCParticleData> MCin, ROOT::VecOps::RVec<int> ind){
+  int flav = 0;
+  ROOT::VecOps::RVec<int> result(in.size(), flav);
+  
+  for(size_t i = 0; i < MCin.size(); ++i){
+    if(MCin[i].PDG==25){
+      for(auto& daughter : MCParticle::get_list_of_particles_from_decay(i, MCin, ind)){
+        if(MCin[daughter].PDG!=25) {
+          flav = std::abs(MCin[daughter].PDG);
+          for(size_t j = 0; j<result.size(); ++j){
+            result[j]=flav;
+          }
+          return result;
+        }
+      }
+    }
+  }
+
+  //for(auto& p : MCin){
+  //  if(((p.generatorStatus>20) && (p.generatorStatus<30))&&(p.PDG==25)){
+  //    //daughters = get_list_of_particles_from decay(...) 
+  //    flav = std::abs(p.PDG);
+  //    break;
+  //  }
+  //}
+  return result;
+}
 
 
 

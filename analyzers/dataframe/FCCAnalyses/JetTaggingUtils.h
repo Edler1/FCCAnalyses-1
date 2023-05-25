@@ -28,11 +28,17 @@ namespace JetTaggingUtils{
   //GM fncs
   ROOT::VecOps::RVec<int> find_ghosts(const ROOT::VecOps::RVec<edm4hep::MCParticleData> & Particle,
                  const ROOT::VecOps::RVec<int> & ind);
+  
+ 
+  ROOT::VecOps::RVec<int> find_ghosts_by_status(const ROOT::VecOps::RVec<edm4hep::MCParticleData> & Particle,
+                                             const ROOT::VecOps::RVec<int> & ind,
+                                             std::vector<int> partonStatus);
 
   JetClusteringUtils::FCCAnalysesJet set_flavour(const ROOT::VecOps::RVec<edm4hep::MCParticleData> & Particle,
                  const ROOT::VecOps::RVec<int> & MCindices,
                  JetClusteringUtils::FCCAnalysesJet & jets,
-                 std::vector<fastjet::PseudoJet> & pseudoJets);
+                 std::vector<fastjet::PseudoJet> & pseudoJets,
+                 float delAngle = 0.);
 
   ROOT::VecOps::RVec<int> get_flavour(const JetClusteringUtils::FCCAnalysesJet & jets);
 
@@ -41,8 +47,20 @@ namespace JetTaggingUtils{
                  JetClusteringUtils::FCCAnalysesJet & jets,
                  std::vector<fastjet::PseudoJet> & pseudoJets);
 
+  ROOT::VecOps::RVec<int> get_flavour(const ROOT::VecOps::RVec<edm4hep::MCParticleData> & Particle,
+                                    const ROOT::VecOps::RVec<int> & ind,
+                                    JetClusteringUtils::FCCAnalysesJet & jets,
+                                    std::vector<fastjet::PseudoJet> & pseudoJets,
+                                    float dAngle,
+                                    int pStatus);
+
+
   //Makeshift way to get Z flavour
   ROOT::VecOps::RVec<int> get_Z_flavour(ROOT::VecOps::RVec<fastjet::PseudoJet> in, ROOT::VecOps::RVec<edm4hep::MCParticleData> MCin);
+
+  //Makeshift way to get H flavour
+  ROOT::VecOps::RVec<int> get_H_flavour(ROOT::VecOps::RVec<fastjet::PseudoJet> in, ROOT::VecOps::RVec<edm4hep::MCParticleData> MCin, ROOT::VecOps::RVec<int> ind);
+  
 
   //Get b-tags with an efficiency applied
   ROOT::VecOps::RVec<int> get_btag(ROOT::VecOps::RVec<int> in, float efficiency, float mistag_c=0., float mistag_l=0., float mistag_g=0.);

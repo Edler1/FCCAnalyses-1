@@ -171,6 +171,8 @@ namespace ReconstructedParticle{
   ROOT::VecOps::RVec<float> is_particle(ROOT::VecOps::RVec<int> index, const ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> & in); 
   
   std::vector<std::vector<float>> one_hot_encode(ROOT::VecOps::RVec<float> flavour);
+  
+  std::vector<std::vector<float>> one_hot_encode_Higgs(ROOT::VecOps::RVec<float> flavour);
 
   ROOT::VecOps::RVec<float> get_PID(const ROOT::VecOps::RVec<int> & recind, 
 				    const ROOT::VecOps::RVec<int> & mcind, 
@@ -181,12 +183,17 @@ namespace ReconstructedParticle{
   
   ROOT::VecOps::RVec<int> is_Kaon(ROOT::VecOps::RVec<float> PID);
   
+  //Outdated don't use...
   ROOT::VecOps::RVec<int> is_Kaon_smearedUniform010(ROOT::VecOps::RVec<float> PID);
   
+  //Outdated don't use...
   ROOT::VecOps::RVec<int> is_Kaon_smearedUniform005(ROOT::VecOps::RVec<float> PID);
   
+  //Outdated don't use...
   ROOT::VecOps::RVec<int> is_Kaon_smearedUniform001(ROOT::VecOps::RVec<float> PID);
 
+  ROOT::VecOps::RVec<int> is_Kaon_smearedUniform(ROOT::VecOps::RVec<float> PID, float efficiency, float mistag_pi);
+  
   /// ------ ///
 
 }//end NS ReconstructedParticle

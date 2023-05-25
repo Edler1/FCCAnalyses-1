@@ -231,6 +231,7 @@ namespace MCParticle{
                                              const ROOT::VecOps::RVec<edm4hep::MCParticleData> &in,
                                              const ROOT::VecOps::RVec<int> &ind);
 
+  std::vector<std::vector<int>> get_nested_daughters(ROOT::VecOps::RVec<edm4hep::MCParticleData> in, ROOT::VecOps::RVec<int> ind) ;
 
 }//end NS MCParticle
 

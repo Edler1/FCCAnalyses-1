@@ -741,6 +741,14 @@ ROOT::VecOps::RVec<int> get_leptons_origin(const ROOT::VecOps::RVec<edm4hep::MCP
   return result;
 }
 
+std::vector<std::vector<int>> get_nested_daughters(ROOT::VecOps::RVec<edm4hep::MCParticleData> in, ROOT::VecOps::RVec<int> ind){
+  std::vector<std::vector<int>> result;
+  for (size_t i = 0; i < in.size(); ++i) {
+    result.push_back(get_list_of_particles_from_decay(i, in, ind));
+  }
+  return result;
+}
+
 }//end NS MCParticle
 
 }//end NS FCCAnalyses
