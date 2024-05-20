@@ -58,6 +58,7 @@ class RDFanalysis():
             .Define("RP_px",        "ReconstructedParticle::get_px(ReconstructedParticles)")
             .Define("RP_py",        "ReconstructedParticle::get_py(ReconstructedParticles)")
             .Define("RP_pz",        "ReconstructedParticle::get_pz(ReconstructedParticles)")               
+            .Define("RP_e",         "ReconstructedParticle::get_e(ReconstructedParticles)")
             .Define("RP_m",         "ReconstructedParticle::get_mass(ReconstructedParticles)")
             .Define("RP_charge",    "ReconstructedParticle::get_charge(ReconstructedParticles)")
             #Even neutrals have tracks now?
@@ -65,11 +66,23 @@ class RDFanalysis():
             .Define("RP_hasTRK",    "ROOT::VecOps::RVec<int> result; for (auto& charge : RP_charge){if(std::abs(charge)>0) result.push_back(1); else result.push_back(0);}return result;")
             .Define("RP_charged",   "ReconstructedParticle::sel_tag(1)(RP_hasTRK, ReconstructedParticles)")
             .Define("RP_neutral",   "ReconstructedParticle::sel_tag(0)(RP_hasTRK, ReconstructedParticles)")
-            .Define("RP_isMuon",    "ReconstructedParticle::is_particle(Muon0, ReconstructedParticles)")
-            .Define("RP_isElectron","ReconstructedParticle::is_particle(Electron0, ReconstructedParticles)")
-            .Define("RP_isPhoton",  "ReconstructedParticle::is_particle(Photon0, ReconstructedParticles)")
+            #.Define("RP_isMuon",    "ReconstructedParticle::is_particle(Muon0, ReconstructedParticles)")
+            #.Define("RP_isElectron","ReconstructedParticle::is_particle(Electron0, ReconstructedParticles)")
+            #.Define("RP_isPhoton",  "ReconstructedParticle::is_particle(Photon0, ReconstructedParticles)")
             
             .Define("RP_PID",          "ReconstructedParticle::get_PID(MCRecoAssociations0, MCRecoAssociations1, ReconstructedParticles, Particle)")
+           
+            
+            .Define("RP_isMuon",  "ReconstructedParticle::is_PID(13, RP_PID)")
+            .Define("RP_isElectron",  "ReconstructedParticle::is_PID(11, RP_PID)")
+            .Define("RP_isPion",  "ReconstructedParticle::is_PID(211, RP_PID)")
+            .Define("RP_isProton",  "ReconstructedParticle::is_PID(2212, RP_PID)")
+            .Define("RP_isPhoton",  "ReconstructedParticle::is_PID(22, RP_PID)")
+            .Define("RP_isKlong",  "ReconstructedParticle::is_PID(130, RP_PID)")
+            .Define("RP_isNeutron",  "ReconstructedParticle::is_PID(2112, RP_PID)")
+            .Define("RP_isNPion",  "ReconstructedParticle::is_PID(111, RP_PID)")
+            
+            
             ##.Define("RP_charged_PID",   "ReconstructedParticle::sel_template(true)(RP_hasTRK, RP_PID)")
             .Define("is_S",          "ReconstructedParticle::is_S(RP_PID)")
             .Define("is_Kaon",          "ReconstructedParticle::is_Kaon(RP_PID)")
@@ -91,14 +104,20 @@ class RDFanalysis():
             #.Define("RP_charged_p_template","ReconstructedParticle::get_p(RP_template)")
             .Define("RP_charged_theta",     "ReconstructedParticle::get_theta(RP_charged)")
             .Define("RP_charged_phi",       "ReconstructedParticle::get_phi(RP_charged)")
+            .Define("RP_charged_e",       "ReconstructedParticle::get_e(RP_charged)")
             .Define("RP_charged_mass",      "ReconstructedParticle::get_mass(RP_charged)") #should think about this, do we really mean mass of RP or assuming pion?
             .Define("RP_charged_Z0",        "ReconstructedParticle2Track::getRP2TRK_Z0(RP_charged, EFlowTrack_1)")
             .Define("RP_charged_D0",        "ReconstructedParticle2Track::getRP2TRK_D0(RP_charged, EFlowTrack_1)")
             .Define("RP_charged_Z0_sig",    "ReconstructedParticle2Track::getRP2TRK_Z0_sig(RP_charged, EFlowTrack_1)")
             .Define("RP_charged_D0_sig",    "ReconstructedParticle2Track::getRP2TRK_D0_sig(RP_charged, EFlowTrack_1)")
-
-            ####Get neutral PF vars 
+            .Define("RP_charged_Curv",    "ReconstructedParticle2Track::getRP2TRK_omega(RP_charged, EFlowTrack_1)")
+            
+             ####Get neutral PF vars 
             .Define("RP_neutral_p", "ReconstructedParticle::get_p(RP_neutral)")
+            .Define("RP_neutral_theta",     "ReconstructedParticle::get_theta(RP_neutral)")
+            .Define("RP_neutral_phi",       "ReconstructedParticle::get_phi(RP_neutral)")
+            .Define("RP_neutral_e",       "ReconstructedParticle::get_e(RP_neutral)")
+            .Define("RP_neutral_mass",      "ReconstructedParticle::get_mass(RP_neutral)") #should think about this, do we really mean mass of RP or assuming pion?
 
             # First, reconstruct a vertex from all tracks
             .Define("VertexObject_allTracks",  "VertexFitterSimple::VertexFitter_Tk ( 1, EFlowTrack_1, true, 4.5, 20e-3, 300)")
@@ -147,8 +166,14 @@ class RDFanalysis():
             #Some hacky reshaping of the event level RP ids
             .Define("RPj_isMuon",     "JetClusteringUtils::reshape2jet(RP_isMuon, jetconstituents)")
             .Define("RPj_isElectron", "JetClusteringUtils::reshape2jet(RP_isElectron, jetconstituents)")
-            .Define("RPj_isPhoton",   "JetClusteringUtils::reshape2jet(RP_isPhoton, jetconstituents)")
+            .Define("RPj_isPion", "JetClusteringUtils::reshape2jet(RP_isPion, jetconstituents)")
+            .Define("RPj_isProton", "JetClusteringUtils::reshape2jet(RP_isProton, jetconstituents)")
+            .Define("RPj_isPhoton", "JetClusteringUtils::reshape2jet(RP_isPhoton, jetconstituents)")
+            .Define("RPj_isKlong", "JetClusteringUtils::reshape2jet(RP_isKlong, jetconstituents)")
+            .Define("RPj_isNeutron", "JetClusteringUtils::reshape2jet(RP_isNeutron, jetconstituents)")
+            .Define("RPj_isNPion", "JetClusteringUtils::reshape2jet(RP_isNPion, jetconstituents)")
             .Define("RPj_PID", "JetClusteringUtils::reshape2jet(RP_PID, jetconstituents)")
+            
             .Define("RPj_is_S", "JetClusteringUtils::reshape2jet(is_S, jetconstituents)")
             .Define("RPj_is_Kaon", "JetClusteringUtils::reshape2jet(is_Kaon, jetconstituents)")
             .Define("RPj_is_Kaon_smearedUniform080", "JetClusteringUtils::reshape2jet(is_Kaon_smearedUniform080, jetconstituents)")
@@ -182,7 +207,17 @@ class RDFanalysis():
             .Define("jets_pt",         "JetClusteringUtils::get_pt(jets_ee_kt)")
             .Define("jets_eta",        "JetClusteringUtils::get_eta(jets_ee_kt)")
             
-
+            # These have to come after the jets_...
+            .Define("RPj_e",     "JetClusteringUtils::reshape2jet(RP_e, jetconstituents)")
+            .Define("RPj_px",     "JetClusteringUtils::reshape2jet(RP_px, jetconstituents)")
+            .Define("RPj_py",     "JetClusteringUtils::reshape2jet(RP_py, jetconstituents)")
+            .Define("RPj_pz",     "JetClusteringUtils::reshape2jet(RP_pz, jetconstituents)")
+            .Define("RPj_dAngle",     "JetClusteringUtils::get_dAngle(jets_px, jets_py, jets_pz, RPj_px, RPj_py, RPj_pz)")
+            .Define("jets_angularity_00",     "JetClusteringUtils::get_angularity(0, 0, jets_e, RPj_e, RPj_dAngle)")
+            .Define("jets_angularity_105",     "JetClusteringUtils::get_angularity(1, 0.5, jets_e, RPj_e, RPj_dAngle)")
+            .Define("jets_angularity_11",     "JetClusteringUtils::get_angularity(1, 1, jets_e, RPj_e, RPj_dAngle)")
+            .Define("jets_angularity_12",     "JetClusteringUtils::get_angularity(1, 2, jets_e, RPj_e, RPj_dAngle)")
+            .Define("jets_angularity_20",     "JetClusteringUtils::get_angularity(2, 0, jets_e, RPj_e, RPj_dAngle)")
 
 
 
@@ -370,21 +405,27 @@ class RDFanalysis():
             .Define("RPj_charged_p",    "JetClusteringUtils::reshape2jet(RP_charged_p, charged_constis)")
             .Define("RPj_charged_theta","JetClusteringUtils::reshape2jet(RP_charged_theta, charged_constis)")
             .Define("RPj_charged_phi",  "JetClusteringUtils::reshape2jet(RP_charged_phi, charged_constis)")
-            
-            #.Define("RPj_charged_theta_placeholder","JetClusteringUtils::reshape2jet(RP_charged_theta, charged_constis)")
-            #.Define("RPj_charged_phi_placeholder",  "JetClusteringUtils::reshape2jet(RP_charged_phi, charged_constis)")
-            #.Define("RPj_charged_p_placeholder",    "JetClusteringUtils::reshape2jet(RP_charged_p, charged_constis)")
-            
+            .Define("RPj_charged_e",  "JetClusteringUtils::reshape2jet(RP_charged_e, charged_constis)")
             .Define("RPj_charged_mass",      "JetClusteringUtils::reshape2jet(RP_charged_mass, charged_constis)")
+            .Define("RPj_charged_charge",      "JetClusteringUtils::reshape2jet(RP_charged_charge, charged_constis)")
             .Define("RPj_charged_Z0",        "JetClusteringUtils::reshape2jet(RP_charged_Z0, charged_constis)")
             .Define("RPj_charged_D0",        "JetClusteringUtils::reshape2jet(RP_charged_D0, charged_constis)")
             .Define("RPj_charged_Z0_sig",    "JetClusteringUtils::reshape2jet(RP_charged_Z0_sig, charged_constis)")
             .Define("RPj_charged_D0_sig",    "JetClusteringUtils::reshape2jet(RP_charged_D0_sig, charged_constis)")
+            .Define("RPj_charged_Curv",    "JetClusteringUtils::reshape2jet(RP_charged_Curv, charged_constis)")
+            .Define("RPj_charged_pRel",      "JetClusteringUtils::get_pRel(jets_p, RPj_charged_p)")
+            .Define("RPj_charged_eRel",      "JetClusteringUtils::get_eRel(jets_p, RPj_charged_p)")
             .Define("RPj_charged_dTheta",    "JetClusteringUtils::get_dTheta(jets_theta, RPj_charged_theta)")
             .Define("RPj_charged_dPhi",      "JetClusteringUtils::get_dPhi(jets_phi, RPj_charged_phi)")
-            .Define("RPj_charged_pRel",      "JetClusteringUtils::get_pRel(jets_p, RPj_charged_p)")
+            .Define("RPj_charged_dR",      "JetClusteringUtils::get_dR(RPj_charged_dTheta, RPj_charged_dPhi)")
+            .Define("RPj_charged_p_log",      "ReconstructedParticle::get_log(RPj_charged_p)")
+            .Define("RPj_charged_pRel_log",      "ReconstructedParticle::get_log(RPj_charged_pRel)")
+            .Define("RPj_charged_e_log",      "ReconstructedParticle::get_log(RPj_charged_e)")
+            .Define("RPj_charged_eRel_log",      "ReconstructedParticle::get_log(RPj_charged_eRel)")
             .Define("RPj_charged_isMuon",    "ReconstructedParticle::sel_template(true)(RPj_hasTRK, RPj_isMuon)")
             .Define("RPj_charged_isElectron","ReconstructedParticle::sel_template(true)(RPj_hasTRK, RPj_isElectron)")
+            .Define("RPj_charged_isPion","ReconstructedParticle::sel_template(true)(RPj_hasTRK, RPj_isPion)")
+            .Define("RPj_charged_isProton","ReconstructedParticle::sel_template(true)(RPj_hasTRK, RPj_isProton)")
             
             .Define("RPj_charged_PID", "ReconstructedParticle::sel_template(true)(RPj_hasTRK, RPj_PID)")
             .Define("RPj_charged_is_S", "ReconstructedParticle::sel_template(true)(RPj_hasTRK, RPj_is_S)")
@@ -400,15 +441,32 @@ class RDFanalysis():
             #.Define("RPj_charged_is_Kaon_smearedUniform010", "ReconstructedParticle::sel_template(true)(RPj_hasTRK, RPj_is_Kaon_smearedUniform010)")
             #.Define("RPj_charged_is_Kaon_smearedUniform005", "ReconstructedParticle::sel_template(true)(RPj_hasTRK, RPj_is_Kaon_smearedUniform005)")
             #.Define("RPj_charged_is_Kaon_smearedUniform001", "ReconstructedParticle::sel_template(true)(RPj_hasTRK, RPj_is_Kaon_smearedUniform001)")
+            .Define("RPj_charged_dAngle", "ReconstructedParticle::sel_template(true)(RPj_hasTRK, RPj_dAngle)")
             
                
             #Reshape event-level neutral RP to jet-level neutral RP
-            .Define("RPj_neutral_p", "JetClusteringUtils::reshape2jet(RP_neutral_p, neutral_constis)")
+            .Define("RPj_neutral_p",    "JetClusteringUtils::reshape2jet(RP_neutral_p, neutral_constis)")
+            .Define("RPj_neutral_theta","JetClusteringUtils::reshape2jet(RP_neutral_theta, neutral_constis)")
+            .Define("RPj_neutral_phi",  "JetClusteringUtils::reshape2jet(RP_neutral_phi, neutral_constis)")
+            .Define("RPj_neutral_e",  "JetClusteringUtils::reshape2jet(RP_neutral_e, neutral_constis)")
+            .Define("RPj_neutral_mass",      "JetClusteringUtils::reshape2jet(RP_neutral_mass, neutral_constis)")
+            .Define("RPj_neutral_pRel",      "JetClusteringUtils::get_pRel(jets_p, RPj_neutral_p)")
+            .Define("RPj_neutral_eRel",      "JetClusteringUtils::get_eRel(jets_p, RPj_neutral_p)")
+            .Define("RPj_neutral_dTheta",    "JetClusteringUtils::get_dTheta(jets_theta, RPj_neutral_theta)")
+            .Define("RPj_neutral_dPhi",      "JetClusteringUtils::get_dPhi(jets_phi, RPj_neutral_phi)")
+            .Define("RPj_neutral_dR",      "JetClusteringUtils::get_dR(RPj_neutral_dTheta, RPj_neutral_dPhi)")
+            .Define("RPj_neutral_p_log",      "ReconstructedParticle::get_log(RPj_neutral_p)")
+            .Define("RPj_neutral_pRel_log",      "ReconstructedParticle::get_log(RPj_neutral_pRel)")
+            .Define("RPj_neutral_e_log",      "ReconstructedParticle::get_log(RPj_neutral_e)")
+            .Define("RPj_neutral_eRel_log",      "ReconstructedParticle::get_log(RPj_neutral_eRel)")
                
             #.Define("RPj_neutral_p_placeholder", "JetClusteringUtils::reshape2jet(RP_neutral_p, neutral_constis)")
             
-            .Define("RPj_neutral_pRel",     "JetClusteringUtils::get_pRel(jets_p, RPj_neutral_p)")
             .Define("RPj_neutral_isPhoton", "ReconstructedParticle::sel_template(false)(RPj_hasTRK, RPj_isPhoton)")
+            .Define("RPj_neutral_isKlong", "ReconstructedParticle::sel_template(false)(RPj_hasTRK, RPj_isKlong)")
+            .Define("RPj_neutral_isNeutron", "ReconstructedParticle::sel_template(false)(RPj_hasTRK, RPj_isNeutron)")
+            .Define("RPj_neutral_isNPion", "ReconstructedParticle::sel_template(false)(RPj_hasTRK, RPj_isNPion)")
+            .Define("RPj_neutral_dAngle", "ReconstructedParticle::sel_template(false)(RPj_hasTRK, RPj_dAngle)")
             
             #.Define("isB", "int isB = jets_isB_placeholder[0]; return isB;")
             #.Define("isC", "int isC = jets_isC_placeholder[0]; return isC;")
@@ -554,8 +612,8 @@ class RDFanalysis():
             .Redefine("v0_ndf", "std::vector<std::vector<int>> result; for(auto& v0_ndf_single : v0_ndf){std::vector<int> tmp_res(v0_ndf_single.begin(), v0_ndf_single.end()); result.push_back(tmp_res);} return result;")
             .Redefine("v0_theta", "std::vector<std::vector<float>> result; for(auto& v0_theta_single : v0_theta){std::vector<float> tmp_res(v0_theta_single.begin(), v0_theta_single.end()); result.push_back(tmp_res);} return result;")
             .Redefine("v0_phi", "std::vector<std::vector<float>> result; for(auto& v0_phi_single : v0_phi){std::vector<float> tmp_res(v0_phi_single.begin(), v0_phi_single.end()); result.push_back(tmp_res);} return result;")
-            ###.Redefine("v0_thetarel", "std::vector<std::vector<float>> result; for(auto& v0_thetarel_single : v0_thetarel){std::vector<float> tmp_res(v0_thetarel_single.begin(), v0_thetarel_single.end()); result.push_back(tmp_res);} return result;")
-            ###.Redefine("v0_phirel", "std::vector<std::vector<float>> result; for(auto& v0_phirel_single : v0_phirel){std::vector<float> tmp_res(v0_phirel_single.begin(), v0_phirel_single.end()); result.push_back(tmp_res);} return result;")
+            .Redefine("v0_thetarel", "std::vector<std::vector<float>> result; for(auto& v0_thetarel_single : v0_thetarel){std::vector<float> tmp_res(v0_thetarel_single.begin(), v0_thetarel_single.end()); result.push_back(tmp_res);} return result;")
+            .Redefine("v0_phirel", "std::vector<std::vector<float>> result; for(auto& v0_phirel_single : v0_phirel){std::vector<float> tmp_res(v0_phirel_single.begin(), v0_phirel_single.end()); result.push_back(tmp_res);} return result;")
             .Redefine("v0_costhetasvpv", "std::vector<std::vector<float>> result; for(auto& v0_costhetasvpv_single : v0_costhetasvpv){std::vector<float> tmp_res(v0_costhetasvpv_single.begin(), v0_costhetasvpv_single.end()); result.push_back(tmp_res);} return result;")
             .Redefine("v0_dxy", "std::vector<std::vector<float>> result; for(auto& v0_dxy_single : v0_dxy){std::vector<float> tmp_res(v0_dxy_single.begin(), v0_dxy_single.end()); result.push_back(tmp_res);} return result;")
             .Redefine("v0_d3d", "std::vector<std::vector<float>> result; for(auto& v0_d3d_single : v0_d3d){std::vector<float> tmp_res(v0_d3d_single.begin(), v0_d3d_single.end()); result.push_back(tmp_res);} return result;")
@@ -628,21 +686,69 @@ class RDFanalysis():
             "RPj_charged_theta",
             "RPj_charged_phi",
             "RPj_charged_mass",
+            "RPj_charged_charge",
             "RPj_charged_Z0",
             "RPj_charged_D0",
             "RPj_charged_Z0_sig",
             "RPj_charged_D0_sig",
+            "RPj_charged_Curv",
+            "RPj_charged_pRel",
+            "RPj_charged_eRel",
             "RPj_charged_dTheta",
             "RPj_charged_dPhi",
-            "RPj_charged_pRel",
+            "RPj_charged_dR",
+            "RPj_charged_p_log",
+            "RPj_charged_pRel_log",
+            "RPj_charged_e_log",
+            "RPj_charged_eRel_log",
+            "RPj_charged_dAngle",
             "RPj_charged_isMuon",
             "RPj_charged_isElectron",
+            "RPj_charged_isPion",
+            "RPj_charged_isProton",
+            "RPj_charged_PID",
+            
+            "RPj_charged_is_S",
+            "RPj_charged_is_Kaon",
+            "RPj_charged_is_Kaon_smearedUniform080",
+            "RPj_charged_is_Kaon_smearedUniform090",
+            "RPj_charged_is_Kaon_smearedUniform095",
+            "RPj_charged_is_Kaon_smearedUniform060",
+            "RPj_charged_is_Kaon_smearedUniform040",
+            "RPj_charged_is_Kaon_smearedUniform020",
+            "RPj_charged_is_Kaon_smearedUniform000",
+            "RPj_charged_is_Kaon_smearedUniform100",
             
             # neutral PF
             "RPj_neutral_p",
+            "RPj_neutral_theta",
+            "RPj_neutral_phi",
+            "RPj_neutral_mass",
             "RPj_neutral_pRel",
+            "RPj_neutral_eRel",
+            "RPj_neutral_dTheta",
+            "RPj_neutral_dPhi",
+            "RPj_neutral_dR",
+            "RPj_neutral_p_log",
+            "RPj_neutral_pRel_log",
+            "RPj_neutral_e_log",
+            "RPj_neutral_eRel_log",
+            "RPj_neutral_dAngle",
             "RPj_neutral_isPhoton",            
+            "RPj_neutral_isKlong",            
+            "RPj_neutral_isNeutron",            
+            "RPj_neutral_isNPion",            
 
+            
+            ##"RPj_e",
+            ##"RPj_px",
+            ##"RPj_py",
+            ##"RPj_pz",
+            "jets_angularity_00",
+            "jets_angularity_105",
+            "jets_angularity_11",
+            "jets_angularity_12",
+            "jets_angularity_20",
             #### jet variables
             ####"nSV",
             ####"jet_p",
@@ -726,25 +832,14 @@ class RDFanalysis():
             "v0_ndf",
             "v0_theta",
             "v0_phi",
-            ###"v0_thetarel",
-            ###"v0_phirel",
+            "v0_thetarel",
+            "v0_phirel",
             "v0_costhetasvpv",
             "v0_dxy",
             "v0_d3d",
 
             #extra stuff
             #"nJets",
-            "RPj_charged_PID",
-            "RPj_charged_is_S",
-            "RPj_charged_is_Kaon",
-            "RPj_charged_is_Kaon_smearedUniform080",
-            "RPj_charged_is_Kaon_smearedUniform090",
-            "RPj_charged_is_Kaon_smearedUniform095",
-            "RPj_charged_is_Kaon_smearedUniform060",
-            "RPj_charged_is_Kaon_smearedUniform040",
-            "RPj_charged_is_Kaon_smearedUniform020",
-            "RPj_charged_is_Kaon_smearedUniform000",
-            "RPj_charged_is_Kaon_smearedUniform100",
 
 
 

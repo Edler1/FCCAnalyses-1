@@ -212,7 +212,7 @@ std::vector<std::vector<float>> get_dTheta(ROOT::VecOps::RVec<float> jet_theta, 
 
 std::vector<std::vector<float>> get_dPhi(ROOT::VecOps::RVec<float> jet_phi, std::vector<std::vector<float>> constituents_phi){
   //const float  PI = 3.14159265358979f;
-  float dphi; 
+  float dphi=0; 
   std::vector<std::vector<float>> result;
   for (int j=0; j<jet_phi.size(); j++){
     std::vector<float> tmp_res;
@@ -233,6 +233,19 @@ std::vector<std::vector<float>> get_dPhi(ROOT::VecOps::RVec<float> jet_phi, std:
   return result;
 }
 
+std::vector<std::vector<float>> get_dR(std::vector<std::vector<float>> constituents_dTheta, std::vector<std::vector<float>> constituents_dPhi){
+  std::vector<std::vector<float>> result;
+  //for (auto& ind : indices){
+  for (int j=0; j<constituents_dTheta.size(); j++){
+    std::vector<float> tmp_res;
+    for (int k=0; k<constituents_dTheta[j].size(); k++){
+        tmp_res.push_back(std::sqrt(std::pow(constituents_dTheta[j][k], 2)+std::pow(constituents_dPhi[j][k], 2)));
+    }
+    result.push_back(tmp_res);
+  }
+  return result;
+}
+
 std::vector<std::vector<float>> get_pRel(ROOT::VecOps::RVec<float> jet_p, std::vector<std::vector<float>> constituents_p){
   std::vector<std::vector<float>> result;
   //for (auto& ind : indices){
@@ -246,7 +259,48 @@ std::vector<std::vector<float>> get_pRel(ROOT::VecOps::RVec<float> jet_p, std::v
   return result;
 }
 
+//the same as above but I want the naming to not be confusing
+std::vector<std::vector<float>> get_eRel(ROOT::VecOps::RVec<float> jet_e, std::vector<std::vector<float>> constituents_e){
+  std::vector<std::vector<float>> result;
+  //for (auto& ind : indices){
+  for (int j=0; j<jet_e.size(); j++){
+    std::vector<float> tmp_res;
+    for (auto& consti_e : constituents_e[j]){
+      tmp_res.push_back(consti_e/jet_e[j]);
+    }
+    result.push_back(tmp_res);
+  }
+  return result;
+}
 
+std::vector<std::vector<float>> get_dAngle(ROOT::VecOps::RVec<float> jet_px, 
+                                           ROOT::VecOps::RVec<float> jet_py, 
+                                           ROOT::VecOps::RVec<float> jet_pz, 
+                                           std::vector<std::vector<float>> constituents_px,
+                                           std::vector<std::vector<float>> constituents_py,
+                                           std::vector<std::vector<float>> constituents_pz
+                                           ){
+    std::vector<std::vector<float>> result;
+    for(int j=0; j<constituents_px.size(); ++j){ 
+        std::vector<float> tmp_res; 
+        for(int k=0; k<constituents_px[j].size(); ++k){  
+            float dot = constituents_px[j][k] * jet_px[j]
+                        + constituents_py[j][k] * jet_py[j]
+                        + constituents_pz[j][k] * jet_pz[j];
+            float lenSq1 = constituents_px[j][k] * constituents_px[j][k]
+                           + constituents_py[j][k] * constituents_py[j][k]
+                           + constituents_pz[j][k] * constituents_pz[j][k];
+            float lenSq2 = jet_px[j] * jet_px[j]
+                           + jet_py[j] * jet_py[j]
+                           + jet_pz[j] * jet_pz[j];
+            float norm = std::sqrt(lenSq1*lenSq2);
+            float angle = std::acos(dot/norm);
+            tmp_res.push_back(angle);
+        }
+        result.push_back(tmp_res);
+    }
+      return result;
+}
 //int get_nJets(std::vector<std::vector<int>> constituents){
 //  int result = constituents.size();
 //  return result;
@@ -273,6 +327,18 @@ std::vector<std::vector<float>> get_pRel(ROOT::VecOps::RVec<float> jet_p, std::v
 //  return result;
 //};
 
+std::vector<float> get_angularity(float kappa, float beta, ROOT::VecOps::RVec<float> jet_e, std::vector<std::vector<float>> constituents_e, std::vector<std::vector<float>> constituents_dAngle){
+    
+    std::vector<float> result;
+    for(int j=0; j<constituents_e.size(); ++j){ 
+        float tmp_res=0; 
+        for(int k=0; k<constituents_e[j].size(); ++k){ 
+            tmp_res+=std::pow((constituents_e[j][k]/jet_e[j]), kappa)*std::pow((constituents_dAngle[j][k]/TMath::Pi()), beta);
+        }
+        result.push_back(tmp_res);
+    }
+      return result;
+}
 
 
 FCCAnalysesJet initialise_FCCAnalysesJet(TString clustering_algo, ROOT::VecOps::RVec<float> clustering_params){

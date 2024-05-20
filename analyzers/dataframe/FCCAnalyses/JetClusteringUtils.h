@@ -8,6 +8,7 @@
 #include "edm4hep/MCParticleData.h"
 #include "fastjet/JetDefinition.hh"
 #include "TRandom3.h"
+#include "TMath.h"
 
 /** Jet clustering utilities interface.
 This represents a set functions and utilities to perfom jet clustering from a list of.
@@ -127,9 +128,25 @@ namespace JetClusteringUtils{
   /** Get difference of jet phi and jet constituent phi in [-pi, pi]. */
   std::vector<std::vector<float>> get_dPhi(ROOT::VecOps::RVec<float> jet_phi, std::vector<std::vector<float>> constituents_phi);
   
+  /** Get difference dR in theta-phi space of jet and jet constituent. */
+  std::vector<std::vector<float>> get_dR(std::vector<std::vector<float>> constituents_dTheta, std::vector<std::vector<float>> constituents_dPhi);
+  
   /** Get ratio of jet constituent |p| and jet |p|. */
   std::vector<std::vector<float>> get_pRel(ROOT::VecOps::RVec<float> jet_p, std::vector<std::vector<float>> constituents_p);
 
+  /** Get ratio of jet constituent e and jet e. */
+  std::vector<std::vector<float>> get_eRel(ROOT::VecOps::RVec<float> jet_e, std::vector<std::vector<float>> constituents_e);
+  
+  /** Get angles of jet constituents and jet axis. */
+  std::vector<std::vector<float>> get_dAngle(ROOT::VecOps::RVec<float> jet_px, 
+                                             ROOT::VecOps::RVec<float> jet_py, 
+                                             ROOT::VecOps::RVec<float> jet_pz, 
+                                             std::vector<std::vector<float>> constituents_px,
+                                             std::vector<std::vector<float>> constituents_py,
+                                             std::vector<std::vector<float>> constituents_pz
+                                             );
+  std::vector<float> get_angularity(float kappa, float beta, ROOT::VecOps::RVec<float> jet_e, std::vector<std::vector<float>> constituents_e, std::vector<std::vector<float>> constituents_dAngle);
+  
   //int get_nJets(std::vector<std::vector<int>> constituents);
 
 

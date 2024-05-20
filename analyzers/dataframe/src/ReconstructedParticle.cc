@@ -690,7 +690,33 @@ ROOT::VecOps::RVec<int> is_Kaon_smearedUniform(ROOT::VecOps::RVec<float> PID, fl
   return result;
 }
   
+
+
+ROOT::VecOps::RVec<int> is_PID(float PID_condition, ROOT::VecOps::RVec<float> PID){
+  ROOT::VecOps::RVec<int> result;
+  for(auto & id : PID){
+    //the below condition works only with positive PID_condition
+    if(std::abs(id)==PID_condition){
+      result.push_back(1);
+    }
+    else result.push_back(0);
+    }
+  return result;
+}
   
+
+
+std::vector<std::vector<float>> get_log(std::vector<std::vector<float>> vals){
+    std::vector<std::vector<float>> result;
+    for(int j=0; j<vals.size(); ++j){
+        std::vector<float> tmp_res;
+        for(int k=0; k<vals[j].size(); ++k){
+            tmp_res.push_back(std::log(vals[j][k]));
+        }
+        result.push_back(tmp_res);
+    }
+    return result;
+}
 /// ------ ///
 
 }//end NS ReconstructedParticle

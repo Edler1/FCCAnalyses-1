@@ -194,6 +194,10 @@ namespace ReconstructedParticle{
 
   ROOT::VecOps::RVec<int> is_Kaon_smearedUniform(ROOT::VecOps::RVec<float> PID, float efficiency, float mistag_pi);
   
+  ROOT::VecOps::RVec<int> is_PID(float PID_condition, ROOT::VecOps::RVec<float> PID);
+  
+  std::vector<std::vector<float>> get_log(std::vector<std::vector<float>> vals);
+  
   /// ------ ///
 
 }//end NS ReconstructedParticle

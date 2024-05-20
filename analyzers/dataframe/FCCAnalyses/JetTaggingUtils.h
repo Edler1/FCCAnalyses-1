@@ -42,6 +42,8 @@ namespace JetTaggingUtils{
 
   ROOT::VecOps::RVec<int> get_flavour(const JetClusteringUtils::FCCAnalysesJet & jets);
 
+  JetClusteringUtils::flav_details get_flavour_details(const JetClusteringUtils::FCCAnalysesJet & jets);
+  
   ROOT::VecOps::RVec<int> get_flavour(const ROOT::VecOps::RVec<edm4hep::MCParticleData> & Particle,
                  const ROOT::VecOps::RVec<int> & ind,
                  JetClusteringUtils::FCCAnalysesJet & jets,
